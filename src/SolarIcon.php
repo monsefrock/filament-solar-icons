@@ -319,26 +319,7 @@ enum SolarIcon: string implements ScalableIcon
         return collect(self::cases())->contains(fn($case) => $case->value === $iconName);
     }
 
-    /**
-     * Find an enum case by its value.
-     *
-     * @param string $iconName The icon identifier
-     * @return self|null The enum case or null if not found
-     */
-    public static function tryFrom(string $iconName): ?self
-    {
-        if (empty(trim($iconName))) {
-            return null;
-        }
 
-        foreach (self::cases() as $case) {
-            if ($case->value === $iconName) {
-                return $case;
-            }
-        }
-
-        return null;
-    }
 
     /**
      * Get all enum cases as an array of values.
