@@ -96,21 +96,16 @@ class SolarIconSetServiceProvider extends ServiceProvider
     {
         $tempPath = sys_get_temp_dir() . "/solar-icons/{$set}";
 
-        // Only create if it doesn't exist or is empty
-        if (!is_dir($tempPath) || count(glob($tempPath . '/*.svg')) === 0) {
-            // Create temp directory if it doesn't exist
-            if (!is_dir($tempPath)) {
-                if (!mkdir($tempPath, 0755, true)) {
-                    return null;
-                }
-            }
-
-            // Clear existing files
-            $this->clearDirectory($tempPath);
-
-            // Recursively find all SVG files and copy them with flattened names
-            $this->flattenIconDirectory($sourcePath, $tempPath);
+        // Always (re)build the flattened icon set to ensure latest changes
+        if (!is_dir($tempPath) && !mkdir($tempPath, 0755, true)) {
+            return null;
         }
+
+        // Clear existing files then regenerate
+        $this->clearDirectory($tempPath);
+
+        // Recursively find all SVG files and copy them with flattened names
+        $this->flattenIconDirectory($sourcePath, $tempPath);
 
         return $tempPath;
     }
@@ -150,25 +145,20 @@ class SolarIconSetServiceProvider extends ServiceProvider
     {
         $tempPath = sys_get_temp_dir() . "/solar-icons/all";
 
-        // Only create if it doesn't exist or is empty
-        if (!is_dir($tempPath) || count(glob($tempPath . '/*.svg')) === 0) {
-            // Create temp directory if it doesn't exist
-            if (!is_dir($tempPath)) {
-                if (!mkdir($tempPath, 0755, true)) {
-                    return;
-                }
-            }
+        // Always (re)build the combined icon set
+        if (!is_dir($tempPath) && !mkdir($tempPath, 0755, true)) {
+            return;
+        }
 
-            // Clear existing files
-            $this->clearDirectory($tempPath);
+        // Clear existing files
+        $this->clearDirectory($tempPath);
 
-            // Copy all icons with their full names (set-iconname.svg)
-            foreach ($sets as $set) {
-                $sourcePath = __DIR__ . "/../resources/icons/solar/{$set}";
+        // Copy all icons with their full names (set-iconname.svg)
+        foreach ($sets as $set) {
+            $sourcePath = __DIR__ . "/../resources/icons/solar/{$set}";
 
-                if (is_dir($sourcePath)) {
-                    $this->flattenIconDirectoryWithPrefix($sourcePath, $tempPath, $set);
-                }
+            if (is_dir($sourcePath)) {
+                $this->flattenIconDirectoryWithPrefix($sourcePath, $tempPath, $set);
             }
         }
 
