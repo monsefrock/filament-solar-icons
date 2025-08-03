@@ -2,7 +2,7 @@
 
 use BladeUI\Icons\Factory;
 use Illuminate\Support\Facades\File;
-use Monsefeledrisse\FilamentSolarIcons\SolarIconSetServiceProvider;
+use Monsefeledrisse\LaravelSolarIcons\SolarIconSetServiceProvider;
 
 describe('Edge Cases and Error Handling', function () {
     describe('Service Provider Robustness', function () {

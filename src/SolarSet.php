@@ -1,6 +1,6 @@
 <?php
 
-namespace Monsefeledrisse\FilamentSolarIcons;
+namespace Monsefeledrisse\LaravelSolarIcons;
 
 enum SolarSet: string
 {

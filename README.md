@@ -1,6 +1,6 @@
-# Filament Solar Icons
+# Laravel Solar Icons
 
-A comprehensive Solar Icon Set package for Filament Admin Panel, providing 6 different icon styles with over 1,000 high-quality SVG icons. Compatible with both **Filament v3** and **Filament v4**.
+A comprehensive Solar Icon Set package for Laravel applications, providing 6 different icon styles with over 1,000 high-quality SVG icons. Built on top of the robust BladeUI Icons package.
 
 ## Features
 
@@ -8,10 +8,9 @@ A comprehensive Solar Icon Set package for Filament Admin Panel, providing 6 dif
 - **📦 1000+ Icons**: Comprehensive collection covering all major categories
 - **🔧 Laravel Integration**: Seamless integration with Laravel applications
 - **⚡ BladeUI Icons**: Built on top of the robust BladeUI Icons package
-- **🎯 Filament Ready**: Optimized for use with Filament Admin Panel
-- **🔒 Type Safety**: Enum-based icon system for Filament v4 with IDE autocompletion
-- **🎛️ Flexible Usage**: Works with both string-based (v3) and enum-based (v4) approaches
-- **⚙️ Configurable**: Replace default Filament icons with Solar icons
+- **🔒 Type Safety**: Enum-based icon system with IDE autocompletion
+- **🎛️ Flexible Usage**: Works with Blade components, helper functions, and direct SVG usage
+- **⚙️ Configurable**: Customizable icon sets, classes, and attributes
 - **🔍 Developer Tools**: Icon browser, search, and helper utilities
 
 ## Installation
@@ -19,56 +18,14 @@ A comprehensive Solar Icon Set package for Filament Admin Panel, providing 6 dif
 Install the package via Composer:
 
 ```bash
-composer require monsefeledrisse/filament-solar-icons
+composer require monsefeledrisse/laravel-solar-icons
 ```
 
 The service provider will be automatically registered via Laravel's package discovery.
 
 ## Quick Start
 
-### Filament v3 Usage
-
-```php
-// Form Fields
-TextInput::make('name')
-    ->prefixIcon('solar-linear-user'),
-
-// Table Columns
-TextColumn::make('status')
-    ->icon('solar-bold-check-circle'),
-
-// Actions
-Action::make('export')
-    ->icon('solar-outline-download'),
-
-// Navigation
-NavigationItem::make('Dashboard')
-    ->icon('solar-linear-home'),
-```
-
-### Filament v4 Usage (Type-Safe)
-
-```php
-use Monsefeledrisse\FilamentSolarIcons\SolarIcon;
-
-// Form Fields with IDE autocompletion
-TextInput::make('name')
-    ->prefixIcon(SolarIcon::LinearUser),
-
-// Table Columns
-TextColumn::make('status')
-    ->icon(SolarIcon::Success),
-
-// Actions
-Action::make('export')
-    ->icon(SolarIcon::OutlineDownload),
-
-// Navigation
-NavigationItem::make('Dashboard')
-    ->icon(SolarIcon::LinearHome),
-```
-
-### Blade Templates
+### Using Blade Components
 
 ```blade
 <!-- Solar Bold Icons -->
@@ -82,11 +39,43 @@ NavigationItem::make('Dashboard')
 <!-- Solar Outline Icons -->
 <x-solar-outline-calendar />
 <x-solar-outline-bell />
+
+<!-- With custom attributes -->
+<x-solar-linear-home class="w-6 h-6 text-blue-500" />
 ```
 
-## Filament v4 Configuration
+### Using the Icon Helper
 
-For enhanced Filament v4 integration, publish the configuration file:
+```blade
+<!-- Using the @svg directive -->
+@svg('solar-linear-home', 'w-6 h-6')
+@svg('solar-bold-user', ['class' => 'text-gray-500'])
+
+<!-- Using the icon component -->
+<x-icon name="solar-outline-settings" class="w-5 h-5" />
+```
+
+### Using the SolarIcon Enum (Type-Safe)
+
+```php
+use Monsefeledrisse\LaravelSolarIcons\SolarIcon;
+
+// In your Blade views
+<x-icon :name="SolarIcon::Home->value" />
+
+// In your PHP code
+$iconName = SolarIcon::User->value; // Returns 'solar-bold-User'
+
+// Get available sets for an icon
+$sets = SolarIcon::Home->getAvailableSets();
+
+// Get icon for specific set
+$linearHome = SolarIcon::Home->forSet('solar-linear');
+```
+
+## Configuration
+
+Publish the configuration file to customize the package:
 
 ```bash
 php artisan vendor:publish --tag=solar-icons-config
@@ -96,17 +85,24 @@ Configure in `config/solar-icons.php`:
 
 ```php
 return [
-    // Replace default Filament icons with Solar icons
-    'replace_default_icons' => true,
+    // Default CSS class for all icons
+    'class' => '',
 
-    // Preferred icon style
-    'preferred_style' => 'linear',
+    // Default attributes for all icons
+    'attributes' => [
+        // 'width' => 24,
+        // 'height' => 24,
+    ],
 
-    // Fallback style if preferred is not available
-    'fallback_style' => 'outline',
-
-    // Enable caching for better performance
-    'cache_icons' => true,
+    // Icon sets to register (remove unused sets for better performance)
+    'sets' => [
+        'solar-bold',
+        'solar-bold-duotone',
+        'solar-broken',
+        'solar-line-duotone',
+        'solar-linear',
+        'solar-outline',
+    ],
 ];
 ```
 
@@ -159,76 +155,96 @@ The Solar icon set includes icons from the following categories:
 - Video & Media
 - Weather
 
-## Comprehensive Examples
+## Usage Examples
 
-### Resource Integration
+### In Laravel Views
+
+```blade
+<!-- Basic usage -->
+<x-solar-linear-home class="w-6 h-6" />
+
+<!-- With Tailwind CSS -->
+<div class="flex items-center space-x-2">
+    <x-solar-outline-user class="w-5 h-5 text-gray-500" />
+    <span>User Profile</span>
+</div>
+
+<!-- Using @svg directive -->
+@svg('solar-bold-settings', 'w-8 h-8 text-blue-600')
+
+<!-- Dynamic icon selection -->
+@php
+    $iconName = $user->isActive() ? 'solar-linear-check-circle' : 'solar-outline-close-circle';
+@endphp
+<x-icon :name="$iconName" class="w-4 h-4" />
+```
+
+### In Laravel Components
 
 ```php
 <?php
 
-namespace App\Filament\Resources;
+namespace App\View\Components;
 
-use Filament\Resources\Resource;
-use Monsefeledrisse\FilamentSolarIcons\SolarIcon;
+use Illuminate\View\Component;
+use Monsefeledrisse\LaravelSolarIcons\SolarIcon;
 
-class UserResource extends Resource
+class StatusBadge extends Component
 {
-    // v3: protected static ?string $navigationIcon = 'solar-linear-users';
-    // v4:
-    protected static ?string $navigationIcon = SolarIcon::LinearUsers->value;
+    public function __construct(
+        public string $status,
+        public string $label
+    ) {}
 
-    public static function form(Form $form): Form
+    public function render()
     {
-        return $form->schema([
-            TextInput::make('name')
-                ->prefixIcon(SolarIcon::OutlineUser) // v4
-                ->required(),
+        $icon = match($this->status) {
+            'active' => SolarIcon::LinearCheckCircle->value,
+            'inactive' => SolarIcon::OutlineCloseCircle->value,
+            'pending' => SolarIcon::LinearClock->value,
+            default => SolarIcon::OutlineQuestion->value,
+        };
 
-            TextInput::make('email')
-                ->email()
-                ->prefixIcon(SolarIcon::LinearMail) // v4
-                ->required(),
-
-            Select::make('role')
-                ->options([...])
-                ->prefixIcon(SolarIcon::Shield) // v4
-        ]);
-    }
-
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->icon(SolarIcon::LinearUser), // v4
-
-                IconColumn::make('is_active')
-                    ->boolean()
-                    ->trueIcon(SolarIcon::Success) // v4
-                    ->falseIcon(SolarIcon::OutlineError), // v4
-            ])
-            ->actions([
-                EditAction::make()
-                    ->icon(SolarIcon::OutlineEdit), // v4
-
-                DeleteAction::make()
-                    ->icon(SolarIcon::OutlineDelete), // v4
-            ]);
+        return view('components.status-badge', compact('icon'));
     }
 }
 ```
 
-### Widget Examples
+### In Controllers
 
 ```php
-// Stats Overview Widget
-Stat::make('Total Users', $totalUsers)
-    ->icon(SolarIcon::Users) // v4
-    ->color('success'),
+<?php
 
-Stat::make('Revenue', $revenue)
-    ->icon(SolarIcon::LinearMoney) // v4
-    ->color('primary'),
+namespace App\Http\Controllers;
+
+use Monsefeledrisse\LaravelSolarIcons\SolarIcon;
+use Monsefeledrisse\LaravelSolarIcons\SolarIconHelper;
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $menuItems = [
+            [
+                'label' => 'Dashboard',
+                'icon' => SolarIcon::Home->value,
+                'url' => route('dashboard')
+            ],
+            [
+                'label' => 'Users',
+                'icon' => SolarIcon::Users->value,
+                'url' => route('users.index')
+            ],
+            [
+                'label' => 'Settings',
+                'icon' => SolarIcon::Settings->value,
+                'url' => route('settings')
+            ],
+        ];
+
+        return view('dashboard', compact('menuItems'));
+    }
+}
 ```
 
 ## Icon Style Guide
@@ -269,29 +285,29 @@ The test suite covers:
 
 ### Common Icon Mappings
 
-| Heroicon | Solar Icon (v3) | Solar Icon (v4) |
-|----------|-----------------|-----------------|
-| `heroicon-o-home` | `solar-linear-home` | `SolarIcon::LinearHome` |
-| `heroicon-o-user` | `solar-outline-user` | `SolarIcon::OutlineUser` |
-| `heroicon-o-cog-6-tooth` | `solar-linear-settings` | `SolarIcon::LinearSettings` |
-| `heroicon-o-bell` | `solar-outline-bell` | `SolarIcon::OutlineBell` |
-| `heroicon-o-calendar` | `solar-linear-calendar` | `SolarIcon::LinearCalendar` |
-| `heroicon-o-pencil` | `solar-outline-pen` | `SolarIcon::OutlineEdit` |
-| `heroicon-o-trash` | `solar-outline-trash-bin-minimalistic` | `SolarIcon::OutlineDelete` |
+| Heroicon | Solar Icon | SolarIcon Enum |
+|----------|------------|----------------|
+| `heroicon-o-home` | `solar-linear-Home` | `SolarIcon::Home->forSet('solar-linear')` |
+| `heroicon-o-user` | `solar-outline-User` | `SolarIcon::User->forSet('solar-outline')` |
+| `heroicon-o-cog-6-tooth` | `solar-linear-Settings` | `SolarIcon::Settings->forSet('solar-linear')` |
+| `heroicon-o-bell` | `solar-outline-Notification` | `SolarIcon::Bell->forSet('solar-outline')` |
+| `heroicon-o-calendar` | `solar-linear-Calendar` | `SolarIcon::Calendar->forSet('solar-linear')` |
+| `heroicon-o-pencil` | `solar-outline-Pen` | `SolarIcon::Pen->forSet('solar-outline')` |
+| `heroicon-o-trash` | `solar-outline-trash_bin_minimalistic` | `SolarIcon::TrashBinMinimalistic->forSet('solar-outline')` |
 
-### Helper Tools (v4 only)
+### Helper Tools
 
 ```php
-use Monsefeledrisse\FilamentSolarIcons\SolarIconHelper;
+use Monsefeledrisse\LaravelSolarIcons\SolarIconHelper;
 
 // Search for icons
 $suggestions = SolarIconHelper::searchIcons('user');
 
-// Get recommendations by context
-$navigationIcons = SolarIconHelper::getIconRecommendations('navigation');
+// Get all available icon files
+$allIcons = SolarIconHelper::getAllIconFiles();
 
-// Convert between styles
-$outlineIcon = SolarIconHelper::convertIconStyle('solar-linear-home', 'outline');
+// Get icons by category
+$navigationIcons = SolarIconHelper::getIconsByCategory('navigation');
 ```
 
 ## Troubleshooting
@@ -304,8 +320,8 @@ $outlineIcon = SolarIconHelper::convertIconStyle('solar-linear-home', 'outline')
 
 ### Performance Optimization
 1. Disable unused icon sets in configuration
-2. Enable icon caching in production
-3. Use the enum approach in v4 for better performance
+2. Use specific icon sets instead of loading all sets
+3. Consider using SVG sprites for frequently used icons
 
 ## Development
 
@@ -314,7 +330,6 @@ $outlineIcon = SolarIconHelper::convertIconStyle('solar-linear-home', 'outline')
 - PHP 8.1 or higher
 - Laravel 9.0 or higher
 - BladeUI Icons 1.8 or higher
-- Filament 3.0+ or 4.0+ (optional)
 
 ### Contributing
 

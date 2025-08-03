@@ -2,7 +2,7 @@
 
 use BladeUI\Icons\Factory;
 use Illuminate\Support\Facades\File;
-use Monsefeledrisse\FilamentSolarIcons\SolarIconSetServiceProvider;
+use Monsefeledrisse\LaravelSolarIcons\SolarIconSetServiceProvider;
 
 describe('SolarIconSetServiceProvider', function () {
     it('can be instantiated', function () {

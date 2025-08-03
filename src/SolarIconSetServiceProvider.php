@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Monsefeledrisse\FilamentSolarIcons;
+namespace Monsefeledrisse\LaravelSolarIcons;
 
 use BladeUI\Icons\Factory;
 use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
-use Monsefeledrisse\FilamentSolarIcons\Commands\SolarIconBrowserCommand;
+use Monsefeledrisse\LaravelSolarIcons\Commands\SolarIconBrowserCommand;
 
 /**
  * Solar Icons Service Provider
  *
- * Registers Solar icon sets with BladeUI Icons Factory following
- * the same pattern as BladeHeroicons for consistency and simplicity.
+ * Registers Solar icon sets with BladeUI Icons Factory for Laravel applications.
+ * Provides seamless integration with BladeUI Icons package.
  *
- * @package Monsefeledrisse\FilamentSolarIcons
+ * @package Monsefeledrisse\LaravelSolarIcons
  */
 class SolarIconSetServiceProvider extends ServiceProvider
 {

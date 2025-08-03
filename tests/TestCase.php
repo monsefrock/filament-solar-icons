@@ -1,9 +1,9 @@
 <?php
 
-namespace Monsefeledrisse\FilamentSolarIcons\Tests;
+namespace Monsefeledrisse\LaravelSolarIcons\Tests;
 
 use BladeUI\Icons\BladeIconsServiceProvider;
-use Monsefeledrisse\FilamentSolarIcons\SolarIconSetServiceProvider;
+use Monsefeledrisse\LaravelSolarIcons\SolarIconSetServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra

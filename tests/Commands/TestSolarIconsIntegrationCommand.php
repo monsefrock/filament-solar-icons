@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Monsefeledrisse\FilamentSolarIcons\Tests\Commands;
+namespace Monsefeledrisse\LaravelSolarIcons\Tests\Commands;
 
 use BladeUI\Icons\Factory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Blade;
-use Monsefeledrisse\FilamentSolarIcons\SolarIcon;
+use Monsefeledrisse\LaravelSolarIcons\SolarIcon;
 use Throwable;
 
 /**
