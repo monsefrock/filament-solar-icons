@@ -1,0 +1,19 @@
+{
+    "name": "monsefeledrisse/filament-solar-icons",
+    "description": "Solar Icon Set for Filament Admin Panel",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Monsefeledrisse\\FilamentSolarIcons\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Monsef Eledrisse",
+            "email": "zaone035@gmail.com"
+        }
+    ],
+    "require": {
+        "blade-ui-kit/blade-icons": "^1.8"
+    }
+}
