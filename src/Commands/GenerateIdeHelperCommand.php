@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Monsefeledrisse\LaravelSolarIcons\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Monsefeledrisse\LaravelSolarIcons\SolarIconHelper;
 
 /**
@@ -77,7 +78,7 @@ class GenerateIdeHelperCommand extends Command
     /**
      * Generate the IDE helper file content.
      */
-    protected function generateIdeHelperContent($icons): string
+    protected function generateIdeHelperContent(Collection $icons): string
     {
         $components = [];
         $iconsBySet = $icons->groupBy('style');
@@ -86,14 +87,12 @@ class GenerateIdeHelperCommand extends Command
             foreach ($styleIcons as $icon) {
                 $componentName = $icon['key'];
                 $iconName = $icon['name'];
-                
-                // Generate component stub
                 $components[] = $this->generateComponentStub($componentName, $iconName, $style);
             }
         }
 
         $componentsContent = implode("\n\n", $components);
-        $timestamp = date('Y-m-d H:i:s');
+        $timestamp = now()->format('Y-m-d H:i:s');
         $totalComponents = count($components);
 
         return <<<PHP
@@ -131,7 +130,7 @@ PHP;
     protected function generateComponentStub(string $componentName, string $iconName, string $style): string
     {
         $className = $this->generateComponentClassName($componentName);
-        
+
         return <<<PHP
 /**
  * Solar Icon Component: {$iconName}
@@ -150,7 +149,8 @@ class {$className}
         public ?string \$color = null,
         public array \$attributes = []
     ) {}
-}PHP;
+}
+PHP;
     }
 
     /**
@@ -158,16 +158,14 @@ class {$className}
      */
     protected function generateComponentClassName(string $componentName): string
     {
-        // Convert component name to PascalCase class name
         $className = str_replace(['-', '_'], ' ', $componentName);
         $className = ucwords($className);
         $className = str_replace(' ', '', $className);
-        
-        // Ensure it starts with a letter
+
         if (is_numeric(substr($className, 0, 1))) {
             $className = 'Component' . $className;
         }
-        
+
         return $className . 'Component';
     }
 }
