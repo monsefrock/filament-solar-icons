@@ -11,7 +11,7 @@
         "svg",
         "blade-components"
     ],
-    "homepage": "https://github.com/monsefeledrisse/laravel-solar-icons",
+    "homepage": "https://github.com/monsefrock/filament-solar-icons",
     "license": "MIT",
     "autoload": {
         "psr-4": {
@@ -31,8 +31,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/monsefeledrisse/laravel-solar-icons/issues",
-        "source": "https://github.com/monsefeledrisse/laravel-solar-icons"
+        "issues": "https://github.com/monsefrock/filament-solar-icons/issues",
+        "source": "https://github.com/monsefrock/filament-solar-icons"
     },
     "require": {
         "blade-ui-kit/blade-icons": "^1.8",
