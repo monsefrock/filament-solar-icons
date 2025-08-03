@@ -26,11 +26,11 @@ namespace Monsefeledrisse\FilamentSolarIcons;
 enum SolarIcon: string
 {
     // Common UI Icons - Bold Style
-    case Home = 'solar-bold-home';
-    case User = 'solar-bold-user';
-    case Users = 'solar-bold-users';
-    case Settings = 'solar-bold-settings';
-    case Search = 'solar-bold-magnifer';
+    case Home = 'solar-bold-essentional___ui.home2';
+    case User = 'solar-bold-Users.user_block';
+    case Users = 'solar-bold-Users.users_group_rounded';
+    case Settings = 'solar-bold-settings___fine_tuning.settings_minimalistic';
+    case Search = 'solar-bold-Search.minimalistic_magnifer';
 
     /**
      * Get the icon for a specific size.
