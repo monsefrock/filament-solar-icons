@@ -5,107 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.2] - 2025-01-03
+## [Unreleased]
 
-### Fixed
-- **Icon Resolution**: Fixed "Unable to locate a class or view for component" errors
-- **BladeUI Icons Integration**: Corrected icon names to match actual file structure
-- **Directory Structure**: Updated enum values to use correct nested directory paths
-- **Icon Naming Convention**: Fixed conversion between BladeUI Icons naming and file paths
+## [1.0.0] - 2025-08-03
 
 ### Added
-- Comprehensive troubleshooting guide (`TROUBLESHOOTING.md`)
-- Icon resolution testing utilities
-- Better error messages for missing icons
+- Initial release of Laravel Solar Icons package
+- 6 different icon styles (Bold, Bold Duotone, Broken, Line Duotone, Linear, Outline)
+- 1000+ high-quality SVG icons
+- BladeUI Icons integration
+- Type-safe enum system with IDE autocompletion
+- Icon browser command for Laravel applications
+- Comprehensive Laravel usage examples
+- Laravel package auto-discovery support
+- Helper methods for icon discovery and management
 
 ### Changed
-- Updated enum icon values to match actual Solar icon file structure
-- Improved icon path resolution for nested directories
-- Enhanced documentation with correct usage examples
+- **BREAKING**: Converted from Filament-specific package to generic Laravel package
+- **BREAKING**: Updated namespace from `Monsefeledrisse\FilamentSolarIcons` to `Monsefeledrisse\LaravelSolarIcons`
+- **BREAKING**: Removed Filament-specific dependencies and code
+- Updated package name from `monsefeledrisse/filament-solar-icons` to `monsefeledrisse/laravel-solar-icons`
+- Rewritten documentation for Laravel usage
+- Updated examples to focus on Laravel applications
 
-## [1.0.1] - 2025-01-03
+### Removed
+- Filament-specific service providers and compatibility helpers
+- Filament v3/v4 specific features and integrations
+- Filament-specific test files and examples
+- Development artifacts and Filament-specific documentation
 
-### Fixed
-- **ScalableIcon Interface Compatibility**: Fixed "Cannot redeclare methods from enum implicit interfaces" error
-- **Enum Value Duplicates**: Resolved duplicate enum values that caused fatal errors
-- **Filament Integration**: Improved compatibility with Filament when it's not installed as a dependency
-- **Cross-Environment Support**: Enhanced package to work both with and without Filament being available
-
-### Added
-- `FilamentCompatibilityHelper` class for better Filament integration support
-- Compatibility checking utilities for debugging integration issues
-- Enhanced error handling for missing Filament dependencies
-
-### Changed
-- Removed direct `ScalableIcon` interface implementation to avoid dependency issues
-- Updated enum to provide `getIconForSize` method without requiring interface
-- Improved documentation for Filament integration scenarios
-
-## [1.0.0] - 2025-01-03
-
-### Added
-- Initial stable release of Solar Icons for Filament
-- Complete Solar icon set with 7,000+ icons across 6 styles:
-  - Bold - Filled, strong visual weight
-  - Bold Duotone - Two-tone bold style  
-  - Broken - Stylized broken line style
-  - Line Duotone - Two-tone line style
-  - Linear - Clean, minimal lines
-  - Outline - Clean outlined style
-- `SolarIcon` enum for type-safe icon usage in Filament v4
-- `SolarIconHelper` utility class for icon discovery and management
-- `SolarIconBrowserCommand` for CLI icon browsing and searching
-- Comprehensive test suite with 32 tests and 230 assertions
-- Professional error handling and logging
-- Intelligent caching system with configurable TTL
-- Cross-environment compatibility (Laravel and standalone)
-- Complete PHPDoc documentation
-
-### Features
-- **Type Safety**: Full PHP 8.1+ strict typing with comprehensive type hints
-- **Performance**: Intelligent caching and optimized file system operations
-- **Search**: Advanced icon search capabilities across names and styles
-- **Validation**: Icon existence checking and path validation
-- **Style Conversion**: Convert icons between different styles
-- **CLI Tools**: Browse and search icons from command line
-- **Error Handling**: Graceful error handling with debug-aware reporting
-- **Compatibility**: Works both inside and outside Laravel applications
-
-### Technical Details
-- PHP 8.1+ requirement with strict type declarations
-- Laravel service provider with automatic discovery
-- BladeUI Icons integration for seamless icon rendering
-- PSR-12 coding standards compliance
-- Comprehensive unit and integration tests
-- Memory-efficient handling of large icon sets
-- Native PHP fallbacks for Laravel-specific features
-
-### Documentation
-- Complete API documentation with usage examples
-- Installation and configuration guide
-- Performance optimization recommendations
-- Troubleshooting and FAQ section
-
----
-
-## Version Numbering
-
-This project follows [Semantic Versioning](https://semver.org/):
-
-- **MAJOR** version when you make incompatible API changes
-- **MINOR** version when you add functionality in a backwards compatible manner  
-- **PATCH** version when you make backwards compatible bug fixes
-
-## Release Process
-
-1. Update version in `composer.json`
-2. Update `CHANGELOG.md` with new changes
-3. Create git tag with version number
-4. Push changes and tag to repository
-5. Create GitHub release with changelog notes
-
-## Support
-
-- **Issues**: [GitHub Issues](https://github.com/monsefeledrisse/filament-solar-icons/issues)
-- **Source**: [GitHub Repository](https://github.com/monsefeledrisse/filament-solar-icons)
-- **Documentation**: See README.md for detailed usage instructions
+### Migration Guide
+If you were using the Filament version of this package:
+1. Update your composer.json to use `monsefeledrisse/laravel-solar-icons`
+2. Update namespace imports from `Monsefeledrisse\FilamentSolarIcons` to `Monsefeledrisse\LaravelSolarIcons`
+3. The SolarIcon enum cases remain the same, but usage patterns may differ
+4. Review the new documentation for Laravel-specific usage examples

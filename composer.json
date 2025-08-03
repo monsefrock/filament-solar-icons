@@ -1,27 +1,26 @@
 {
-    "name": "monsefeledrisse/filament-solar-icons",
-    "description": "Solar Icon Set for Filament Admin Panel - Professional icon package with 7,000+ Solar icons across 6 styles",
-    "version": "1.0.2",
+    "name": "monsefeledrisse/laravel-solar-icons",
+    "description": "Solar Icon Set for Laravel - Professional icon package with 7,000+ Solar icons across 6 styles",
     "type": "library",
     "keywords": [
-        "filament",
+        "laravel",
         "icons",
         "solar",
-        "laravel",
         "blade-icons",
         "ui",
-        "admin-panel"
+        "svg",
+        "blade-components"
     ],
-    "homepage": "https://github.com/monsefeledrisse/filament-solar-icons",
+    "homepage": "https://github.com/monsefeledrisse/laravel-solar-icons",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Monsefeledrisse\\FilamentSolarIcons\\": "src/"
+            "Monsefeledrisse\\LaravelSolarIcons\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Monsefeledrisse\\FilamentSolarIcons\\Tests\\": "tests/"
+            "Monsefeledrisse\\LaravelSolarIcons\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -32,15 +31,13 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/monsefeledrisse/filament-solar-icons/issues",
-        "source": "https://github.com/monsefeledrisse/filament-solar-icons"
+        "issues": "https://github.com/monsefeledrisse/laravel-solar-icons/issues",
+        "source": "https://github.com/monsefeledrisse/laravel-solar-icons"
     },
     "require": {
         "blade-ui-kit/blade-icons": "^1.8",
-        "php": "^8.1"
-    },
-    "suggest": {
-        "filament/filament": "^3.0|^4.0 - For Filament Admin Panel integration"
+        "php": "^8.1",
+        "illuminate/support": "^9.0|^10.0|^11.0"
     },
     "require-dev": {
         "pestphp/pest": "^2.0",
@@ -59,7 +56,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Monsefeledrisse\\FilamentSolarIcons\\SolarIconSetServiceProvider"
+                "Monsefeledrisse\\LaravelSolarIcons\\SolarIconSetServiceProvider"
             ]
         }
     },

@@ -5,12 +5,12 @@ declare(strict_types=1);
 use BladeUI\Icons\Factory;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
-use Monsefeledrisse\FilamentSolarIcons\SolarIcon;
+use Monsefeledrisse\LaravelSolarIcons\SolarIcon;
 
 describe('Blade Icons Integration', function () {
     beforeEach(function () {
         // Ensure the service provider is loaded
-        $this->app->register(\Monsefeledrisse\FilamentSolarIcons\SolarIconSetServiceProvider::class);
+        $this->app->register(\Monsefeledrisse\LaravelSolarIcons\SolarIconSetServiceProvider::class);
     });
 
     describe('Icon Factory Registration', function () {

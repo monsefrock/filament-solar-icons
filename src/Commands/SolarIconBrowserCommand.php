@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Monsefeledrisse\FilamentSolarIcons\Commands;
+namespace Monsefeledrisse\LaravelSolarIcons\Commands;
 
 use Illuminate\Console\Command;
-use Monsefeledrisse\FilamentSolarIcons\SolarIconHelper;
-use Monsefeledrisse\FilamentSolarIcons\SolarIcon;
+use Monsefeledrisse\LaravelSolarIcons\SolarIconHelper;
+use Monsefeledrisse\LaravelSolarIcons\SolarIcon;
 
 /**
  * Solar Icon Browser Command
  *
  * Provides a command-line interface for browsing and searching Solar icons.
- * Supports filtering by style, searching by name, and displaying enum cases
- * for Filament v4 integration.
+ * Supports filtering by style, searching by name, and displaying usage examples
+ * for Laravel applications.
  *
- * @package Monsefeledrisse\FilamentSolarIcons\Commands
+ * @package Monsefeledrisse\LaravelSolarIcons\Commands
  */
 class SolarIconBrowserCommand extends Command
 {
@@ -26,13 +26,13 @@ class SolarIconBrowserCommand extends Command
                            {search? : Search term to filter icons}
                            {--style= : Filter by icon style (bold, outline, linear, etc.)}
                            {--limit=20 : Limit number of results}
-                           {--enum : Show enum cases for Filament v4}
+                           {--enum : Show enum cases for Laravel usage}
                            {--clear-cache : Clear the icon cache before browsing}';
 
     /**
      * The console command description.
      */
-    protected $description = 'Browse and search Solar icons with filtering and search capabilities';
+    protected $description = 'Browse and search Solar icons for Laravel applications';
 
     /**
      * Execute the console command.

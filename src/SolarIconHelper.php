@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Monsefeledrisse\FilamentSolarIcons;
+namespace Monsefeledrisse\LaravelSolarIcons;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
  * Utility class for managing Solar icons, generating mappings,
  * and providing helper methods for icon discovery and usage.
  *
- * @package Monsefeledrisse\FilamentSolarIcons
+ * @package Monsefeledrisse\LaravelSolarIcons
  */
 class SolarIconHelper
 {

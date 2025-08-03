@@ -1,5 +1,5 @@
 <?php
 
-use Monsefeledrisse\FilamentSolarIcons\Tests\TestCase;
+use Monsefeledrisse\LaravelSolarIcons\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Monsefeledrisse\FilamentSolarIcons;
+namespace Monsefeledrisse\LaravelSolarIcons;
 
 /**
  * Solar Icon Enum
@@ -14,11 +14,12 @@ namespace Monsefeledrisse\FilamentSolarIcons;
  * - In Blade: <x-icon :name="SolarIcon::Home->value" />
  * - With @svg: @svg(SolarIcon::Home->value)
  * - In PHP: SolarIcon::Home->value returns 'solar-linear-home'
+ * - As Blade component: <x-solar-linear-home />
  *
  * Generated automatically on 2025-08-03 13:40:38
  * Total icons: 1235
  *
- * @package Monsefeledrisse\FilamentSolarIcons
+ * @package Monsefeledrisse\LaravelSolarIcons
  */
 enum SolarIcon: string
 {
