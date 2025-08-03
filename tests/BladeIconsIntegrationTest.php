@@ -172,29 +172,39 @@ describe('Blade Icons Integration', function () {
     });
 
     describe('Error Handling', function () {
-        it('handles non-existent Solar icons gracefully', function () {
+        it('throws exception for non-existent Solar icons', function () {
             $nonExistentIcon = 'solar-bold-NonExistentIcon123';
-            
-            // This should not throw an exception but may return empty or error content
-            $html = Blade::render('<x-icon name="' . $nonExistentIcon . '" />');
-            
-            // The exact behavior depends on BladeUI Icons configuration
-            // but it should not crash the application
-            expect($html)->toBeString();
+
+            // Laravel wraps BladeUI Icons exceptions in ViewException
+            $this->expectException(\Illuminate\View\ViewException::class);
+            $this->expectExceptionMessage('Svg by name "solar-bold-NonExistentIcon123" from set "default" not found');
+            Blade::render('<x-icon name="' . $nonExistentIcon . '" />');
         });
 
-        it('handles malformed icon names gracefully', function () {
+        it('throws exception for malformed icon names', function () {
             $malformedIcons = [
                 'not-a-solar-icon',
                 'solar-invalid',
-                '',
                 'solar--Home',
             ];
 
             foreach ($malformedIcons as $iconName) {
-                $html = Blade::render('<x-icon name="' . $iconName . '" />');
-                expect($html)->toBeString();
+                // Laravel wraps BladeUI Icons exceptions in ViewException
+                try {
+                    Blade::render('<x-icon name="' . $iconName . '" />');
+                    $this->fail("Expected ViewException for icon: {$iconName}");
+                } catch (\Illuminate\View\ViewException $e) {
+                    // This is expected - check that it contains the SvgNotFound message
+                    expect($e->getMessage())->toContain('from set "default" not found');
+                }
             }
+        });
+
+        it('handles empty icon name gracefully', function () {
+            // Empty icon name should be handled without crashing
+            $this->expectException(\Illuminate\View\ViewException::class);
+            $this->expectExceptionMessage('Svg by name "" from set "default" not found');
+            Blade::render('<x-icon name="" />');
         });
     });
 

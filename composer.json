@@ -49,6 +49,7 @@
     },
     "scripts": {
         "test": "pest",
+        "generate-enum": "php bin/generate-solar-enum.php",
         "version": "php bin/version",
         "version:current": "php bin/version current",
         "version:patch": "php bin/version bump patch",
