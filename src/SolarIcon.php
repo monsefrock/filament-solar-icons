@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Monsefeledrisse\FilamentSolarIcons;
 
-use Filament\Support\Contracts\ScalableIcon;
-
 /**
  * Solar Icon Set for Filament v4
  *
@@ -13,7 +11,7 @@ use Filament\Support\Contracts\ScalableIcon;
  * similar to how Heroicon works in the core Filament package.
  *
  * Each enum case represents a specific Solar icon with its full identifier.
- * The enum implements ScalableIcon to work seamlessly with Filament components.
+ * The enum implements ScalableIcon when Filament is available.
  *
  * @example
  * ```php
@@ -25,7 +23,7 @@ use Filament\Support\Contracts\ScalableIcon;
  *
  * @package Monsefeledrisse\FilamentSolarIcons
  */
-enum SolarIcon: string implements ScalableIcon
+enum SolarIcon: string
 {
     // Common UI Icons - Bold Style
     case Home = 'solar-bold-home';
@@ -33,6 +31,21 @@ enum SolarIcon: string implements ScalableIcon
     case Users = 'solar-bold-users';
     case Settings = 'solar-bold-settings';
     case Search = 'solar-bold-magnifer';
+
+    /**
+     * Get the icon for a specific size.
+     *
+     * This method provides compatibility with Filament's ScalableIcon interface.
+     * For Solar icons, we return the same icon regardless of size
+     * since they are SVG and scale naturally.
+     *
+     * @param string $size The requested icon size (ignored for SVG icons)
+     * @return string The icon identifier
+     */
+    public function getIconForSize(string $size): string
+    {
+        return $this->value;
+    }
     case Bell = 'solar-bold-bell';
     case Calendar = 'solar-bold-calendar';
     case Clock = 'solar-bold-clock-circle';
@@ -91,9 +104,9 @@ enum SolarIcon: string implements ScalableIcon
     case DoubleArrowRight = 'solar-bold-double-alt-arrow-right';
     
     // Status Icons - Bold Style
-    case Success = 'solar-bold-check-circle';
+    case Success = 'solar-bold-check-read';
     case Warning = 'solar-bold-danger-triangle';
-    case Error = 'solar-bold-close-circle';
+    case Error = 'solar-bold-close-square';
     case Info = 'solar-bold-info-circle';
     case Question = 'solar-bold-question-circle';
     
@@ -103,7 +116,7 @@ enum SolarIcon: string implements ScalableIcon
     case Shop = 'solar-bold-shop';
     case Tag = 'solar-bold-tag-price';
     case Receipt = 'solar-bold-bill-list';
-    case CreditCard = 'solar-bold-card';
+    case CreditCard = 'solar-bold-card-2';
     case Wallet = 'solar-bold-wallet-money';
     case Chart = 'solar-bold-chart';
     case Analytics = 'solar-bold-graph-up';
@@ -215,9 +228,9 @@ enum SolarIcon: string implements ScalableIcon
     case OutlineChevronRight = 'solar-outline-alt-arrow-right';
     
     // Status Icons - Outline Style
-    case OutlineSuccess = 'solar-outline-check-circle';
+    case OutlineSuccess = 'solar-outline-check-read';
     case OutlineWarning = 'solar-outline-danger-triangle';
-    case OutlineError = 'solar-outline-close-circle';
+    case OutlineError = 'solar-outline-close-square';
     case OutlineInfo = 'solar-outline-info-circle';
     case OutlineQuestion = 'solar-outline-question-circle';
     

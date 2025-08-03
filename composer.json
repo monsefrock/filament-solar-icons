@@ -1,9 +1,17 @@
 {
     "name": "monsefeledrisse/filament-solar-icons",
     "description": "Solar Icon Set for Filament Admin Panel - Professional icon package with 7,000+ Solar icons across 6 styles",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "library",
-    "keywords": ["filament", "icons", "solar", "laravel", "blade-icons", "ui", "admin-panel"],
+    "keywords": [
+        "filament",
+        "icons",
+        "solar",
+        "laravel",
+        "blade-icons",
+        "ui",
+        "admin-panel"
+    ],
     "homepage": "https://github.com/monsefeledrisse/filament-solar-icons",
     "license": "MIT",
     "autoload": {

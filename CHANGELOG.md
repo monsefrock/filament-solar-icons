@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-01-03
+
+### Fixed
+- **ScalableIcon Interface Compatibility**: Fixed "Cannot redeclare methods from enum implicit interfaces" error
+- **Enum Value Duplicates**: Resolved duplicate enum values that caused fatal errors
+- **Filament Integration**: Improved compatibility with Filament when it's not installed as a dependency
+- **Cross-Environment Support**: Enhanced package to work both with and without Filament being available
+
+### Added
+- `FilamentCompatibilityHelper` class for better Filament integration support
+- Compatibility checking utilities for debugging integration issues
+- Enhanced error handling for missing Filament dependencies
+
+### Changed
+- Removed direct `ScalableIcon` interface implementation to avoid dependency issues
+- Updated enum to provide `getIconForSize` method without requiring interface
+- Improved documentation for Filament integration scenarios
+
 ## [1.0.0] - 2025-01-03
 
 ### Added
