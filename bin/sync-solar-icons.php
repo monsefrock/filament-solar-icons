@@ -170,14 +170,20 @@ class SolarIconSynchronizer
 
     private function identifyDifferences($iconFiles): void
     {
-        $fileKeys = $iconFiles->pluck('key')->toArray();
+        // Generate expected blade-ui-kit icon names
+        $expectedBladeIconNames = [];
+        foreach ($iconFiles as $icon) {
+            $bladeIconName = $icon['style'] . '-' . $icon['name'];
+            $expectedBladeIconNames[] = $bladeIconName;
+        }
+
         $enumKeys = array_keys($this->existingEnumCases);
 
         // Find missing icons (in files but not in enum)
-        $this->addedIcons = array_diff($fileKeys, $enumKeys);
+        $this->addedIcons = array_diff($expectedBladeIconNames, $enumKeys);
 
         // Find orphaned enum cases (in enum but not in files)
-        $this->removedIcons = array_diff($enumKeys, $fileKeys);
+        $this->removedIcons = array_diff($enumKeys, $expectedBladeIconNames);
 
         $this->log(sprintf("Icons to add: %d\n", count($this->addedIcons)), true);
         $this->log(sprintf("Icons to remove: %d\n", count($this->removedIcons)), true);
@@ -302,7 +308,10 @@ class SolarIconSynchronizer
 
             $usedNames[] = $enumName;
             $usedValues[] = $iconKey;
-            $casesByStyle[$style][] = "    case {$enumName} = '{$iconKey}';";
+
+            // Generate the correct blade-ui-kit icon name (style-filename)
+            $bladeIconName = $style . '-' . $icon['name'];
+            $casesByStyle[$style][] = "    case {$enumName} = '{$bladeIconName}';";
         }
 
         // Generate organized output
