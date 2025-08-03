@@ -349,4 +349,4 @@ This package is open-sourced software licensed under the [MIT license](LICENSE).
 
 - Solar Icons by [480 Design](https://www.figma.com/community/file/1166831539721848736)
 - Built on [BladeUI Icons](https://github.com/blade-ui-kit/blade-icons)
-- Package created by [Monsef Eledrisse](https://github.com/monsefeledrisse)
+- Package created by [Monsef Eledrisse](https://github.com/monsefrock)

@@ -109,7 +109,15 @@ class SolarIconSetServiceProvider extends ServiceProvider
     {
         $tempPath = sys_get_temp_dir() . "/solar-icons/$set";
 
-        // Always (re)build the flattened icon set to ensure latest changes
+        // Check if we should force rebuild or if directory doesn't exist
+        $forceRebuild = config('solar-icons.development.force_rebuild', false);
+        $shouldRebuild = $forceRebuild || !is_dir($tempPath) || $this->isDirectoryEmpty($tempPath);
+
+        if (!$shouldRebuild) {
+            return $tempPath;
+        }
+
+        // Create directory if it doesn't exist
         if (!is_dir($tempPath) && !mkdir($tempPath, 0755, true)) {
             return null;
         }
@@ -158,7 +166,22 @@ class SolarIconSetServiceProvider extends ServiceProvider
     {
         $tempPath = sys_get_temp_dir() . "/solar-icons/all";
 
-        // Always (re)build the combined icon set
+        // Check if we should force rebuild or if directory doesn't exist
+        $forceRebuild = config('solar-icons.development.force_rebuild', false);
+        $shouldRebuild = $forceRebuild || !is_dir($tempPath) || $this->isDirectoryEmpty($tempPath);
+
+        if (!$shouldRebuild && is_dir($tempPath)) {
+            // Register the existing combined set as the default
+            $factory->add('default', [
+                'path' => $tempPath,
+                'prefix' => '',
+                'class' => config('solar-icons.class', ''),
+                'attributes' => config('solar-icons.attributes', []),
+            ]);
+            return;
+        }
+
+        // Create directory if it doesn't exist
         if (!is_dir($tempPath) && !mkdir($tempPath, 0755, true)) {
             return;
         }
@@ -223,9 +246,9 @@ class SolarIconSetServiceProvider extends ServiceProvider
                 }
             }
 
-            // Only log in debug mode
-            if (config('app.debug', false) && function_exists('error_log')) {
-                error_log("Solar Icons: Flattened {$count} files from {$sourceDir} to {$targetDir} with prefix {$setPrefix}");
+            // Only log if explicitly enabled in configuration
+            if (config('solar-icons.development.log_flattening', false)) {
+                $this->logFlatteningOperation($count, $sourceDir, $targetDir, $setPrefix);
             }
         } catch (\Exception $e) {
             if (function_exists('error_log')) {
@@ -265,5 +288,34 @@ class SolarIconSetServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../resources/icons' => public_path('vendor/solar-icons'),
         ], 'solar-icons');
+    }
+
+    /**
+     * Check if a directory is empty.
+     */
+    protected function isDirectoryEmpty(string $directory): bool
+    {
+        if (!is_dir($directory)) {
+            return true;
+        }
+
+        $files = glob($directory . '/*');
+        return empty($files);
+    }
+
+    /**
+     * Log flattening operation using Laravel's logging system.
+     */
+    protected function logFlatteningOperation(int $count, string $sourceDir, string $targetDir, string $setPrefix): void
+    {
+        try {
+            if (function_exists('logger')) {
+                logger()->debug("Solar Icons: Flattened {$count} files from {$sourceDir} to {$targetDir} with prefix {$setPrefix}");
+            } elseif (function_exists('error_log')) {
+                error_log("Solar Icons: Flattened {$count} files from {$sourceDir} to {$targetDir} with prefix {$setPrefix}");
+            }
+        } catch (\Throwable $e) {
+            // Silently ignore logging errors
+        }
     }
 }

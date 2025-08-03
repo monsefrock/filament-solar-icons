@@ -48,4 +48,48 @@ return [
         'solar-linear',
         'solar-outline',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Development Settings
+    |--------------------------------------------------------------------------
+    |
+    | These settings control development and debugging features.
+    |
+    */
+
+    'development' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Enable Logging
+        |--------------------------------------------------------------------------
+        |
+        | When enabled, the package will log icon flattening operations and other
+        | debug information. This should be disabled in production.
+        |
+        */
+        'log_flattening' => env('SOLAR_ICONS_LOG_FLATTENING', false),
+
+        /*
+        |--------------------------------------------------------------------------
+        | Log Missing Icons
+        |--------------------------------------------------------------------------
+        |
+        | When enabled, the package will log warnings when requested icons
+        | or icon sets are not found.
+        |
+        */
+        'log_missing_icons' => env('SOLAR_ICONS_LOG_MISSING', false),
+
+        /*
+        |--------------------------------------------------------------------------
+        | Force Rebuild
+        |--------------------------------------------------------------------------
+        |
+        | When enabled, the package will always rebuild the flattened icon
+        | structure on every request. Disable in production for better performance.
+        |
+        */
+        'force_rebuild' => env('SOLAR_ICONS_FORCE_REBUILD', false),
+    ],
 ];
