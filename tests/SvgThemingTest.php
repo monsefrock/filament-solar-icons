@@ -70,22 +70,9 @@ class SvgThemingTest extends TestCase
         // Report findings
         $hardcodedCount = count($iconsWithHardcodedColors);
         $percentageFixed = $totalIcons > 0 ? round((($totalIcons - $hardcodedCount) / $totalIcons) * 100, 2) : 0;
-        
-        echo "\nSVG Theming Analysis:\n";
-        echo "Total icons: {$totalIcons}\n";
-        echo "Icons with hardcoded colors: {$hardcodedCount}\n";
-        echo "Icons properly themed: " . ($totalIcons - $hardcodedCount) . " ({$percentageFixed}%)\n";
-        
-        if ($hardcodedCount > 0) {
-            echo "\nFirst 10 icons with hardcoded colors:\n";
-            foreach (array_slice($iconsWithHardcodedColors, 0, 10) as $icon) {
-                echo "  - {$icon}\n";
-            }
-            
-            if ($hardcodedCount > 10) {
-                echo "  ... and " . ($hardcodedCount - 10) . " more\n";
-            }
-        }
+
+        // Assert that we have properly themed icons
+        $this->assertGreaterThan(0, $totalIcons, 'Should have found some icons to analyze');
 
         // For now, we'll make this a soft assertion since we know there are issues
         // Once the fix is applied, this should pass
@@ -94,6 +81,9 @@ class SvgThemingTest extends TestCase
                 "Found {$hardcodedCount} icons with hardcoded colors. " .
                 "Run 'php bin/fix-svg-theming.php' to fix them."
             );
+        } else {
+            // If no hardcoded colors found, assert success
+            $this->assertEquals(0, $hardcodedCount, 'All icons should be properly themed without hardcoded colors');
         }
     }
 

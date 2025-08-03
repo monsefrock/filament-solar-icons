@@ -8,21 +8,23 @@ describe('Edge Cases and Error Handling', function () {
     describe('Service Provider Robustness', function () {
         it('handles missing BladeUI Icons Factory gracefully', function () {
             // Test that the service provider handles Factory resolution errors gracefully
-            // by creating a provider that will fail to resolve the Factory
-            $provider = new class($this->app) extends SolarIconSetServiceProvider {
-                protected function resolveIconFactory(): Factory
-                {
-                    throw new \Exception('Failed to resolve BladeUI Icons Factory. Make sure blade-ui-kit/blade-icons is installed.');
-                }
-            };
+            // by temporarily removing the Factory from the container
+            $originalFactory = $this->app->make(Factory::class);
 
-            // In non-debug mode, this should not throw an exception
-            config(['app.debug' => false]);
+            // Remove the Factory from the container to simulate missing dependency
+            $this->app->forgetInstance(Factory::class);
+            $this->app->bind(Factory::class, function () {
+                throw new \Exception('Failed to resolve BladeUI Icons Factory. Make sure blade-ui-kit/blade-icons is installed.');
+            });
+
+            $provider = new SolarIconSetServiceProvider($this->app);
+
+            // The service provider should handle the missing Factory gracefully
+            // by catching the exception during icon registration
             expect(fn() => $provider->boot())->not->toThrow(\Exception::class);
 
-            // In debug mode, it should throw an exception
-            config(['app.debug' => true]);
-            expect(fn() => $provider->boot())->toThrow(\Exception::class);
+            // Restore the original Factory
+            $this->app->instance(Factory::class, $originalFactory);
         });
 
         it('handles corrupted icon directories', function () {

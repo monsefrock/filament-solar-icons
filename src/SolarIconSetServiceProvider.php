@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Monsefeledrisse\FilamentSolarIcons;
 
 use BladeUI\Icons\Factory;
+use Exception;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
 use Monsefeledrisse\FilamentSolarIcons\Commands\SolarIconBrowserCommand;
 
@@ -32,6 +34,7 @@ class SolarIconSetServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap the application services.
+     * @throws Exception
      */
     public function boot(): void
     {
@@ -42,10 +45,20 @@ class SolarIconSetServiceProvider extends ServiceProvider
 
     /**
      * Register Solar icon sets with BladeUI Icons Factory.
+     * @throws BindingResolutionException
      */
     protected function registerIcons(): void
     {
-        $factory = $this->app->make(Factory::class);
+        try {
+            $factory = $this->app->make(Factory::class);
+        } catch (Exception $e) {
+            // If BladeUI Icons Factory is not available, skip icon registration
+            // This allows the package to be installed without breaking the application
+            if (config('app.debug', false)) {
+                throw $e;
+            }
+            return;
+        }
 
         $sets = config('solar-icons.sets', [
             'solar-bold',
@@ -61,16 +74,16 @@ class SolarIconSetServiceProvider extends ServiceProvider
             $this->registerIconSet($factory, $set);
         }
 
-        // Also register all icons in the default set for easy access
+        // Also, register all icons in the default set for easy access
         $this->registerAllIconsInDefaultSet($factory, $sets);
     }
 
     /**
-     * Register a single icon set with flattened structure.
+     * Register a single icon set with a flattened structure.
      */
     protected function registerIconSet($factory, string $set): void
     {
-        $sourcePath = __DIR__ . "/../resources/icons/solar/{$set}";
+        $sourcePath = __DIR__ . "/../resources/icons/solar/$set";
 
         if (!is_dir($sourcePath)) {
             return;
@@ -94,7 +107,7 @@ class SolarIconSetServiceProvider extends ServiceProvider
      */
     protected function createFlattenedIconSet(string $sourcePath, string $set): ?string
     {
-        $tempPath = sys_get_temp_dir() . "/solar-icons/{$set}";
+        $tempPath = sys_get_temp_dir() . "/solar-icons/$set";
 
         // Always (re)build the flattened icon set to ensure latest changes
         if (!is_dir($tempPath) && !mkdir($tempPath, 0755, true)) {

@@ -78,8 +78,13 @@ describe('SolarIconSetServiceProvider', function () {
 
             foreach ($iconSets as $prefix) {
                 $actualPath = $registeredSets[$prefix]['paths'][0];
-                expect(str_contains($actualPath, "resources/icons/solar/{$prefix}"))->toBeTrue("Path should contain resources/icons/solar/{$prefix}");
+                // The service provider creates temporary flattened directories
+                expect(str_contains($actualPath, "solar-icons/{$prefix}"))->toBeTrue("Path should contain solar-icons/{$prefix}");
                 expect(File::isDirectory($actualPath))->toBeTrue("Path should be a valid directory");
+
+                // Verify the directory contains SVG files
+                $svgFiles = glob($actualPath . '/*.svg');
+                expect(count($svgFiles))->toBeGreaterThan(0, "Directory should contain SVG files");
             }
         });
 
