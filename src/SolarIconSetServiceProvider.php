@@ -15,22 +15,24 @@ class SolarIconSetServiceProvider extends ServiceProvider
     protected function registerIcons()
     {
         $iconSets = [
-            'solar-bold' => __DIR__ . '/../resources/icons/solar-bold',
-            'solar-bold-duotone' => __DIR__ . '/../resources/icons/solar-bold-duotone',
-            'solar-broken' => __DIR__ . '/../resources/icons/solar-broken',
-            'solar-line-duotone' => __DIR__ . '/../resources/icons/solar-line-duotone',
-            'solar-linear' => __DIR__ . '/../resources/icons/solar-linear',
-            'solar-outline' => __DIR__ . '/../resources/icons/solar-outline',
+            'solar-bold' => __DIR__ . '/../resources/icons/solar/solar-bold',
+            'solar-bold-duotone' => __DIR__ . '/../resources/icons/solar/solar-bold-duotone',
+            'solar-broken' => __DIR__ . '/../resources/icons/solar/solar-broken',
+            'solar-line-duotone' => __DIR__ . '/../resources/icons/solar/solar-line-duotone',
+            'solar-linear' => __DIR__ . '/../resources/icons/solar/solar-linear',
+            'solar-outline' => __DIR__ . '/../resources/icons/solar/solar-outline',
         ];
 
         /** @var Factory $icons */
         $icons = $this->app->make(Factory::class);
 
         foreach ($iconSets as $prefix => $path) {
-            $icons->add($prefix, [
-                'path' => $path,
-                'prefix' => $prefix,
-            ]);
+            if (is_dir($path)) {
+                $icons->add($prefix, [
+                    'path' => $path,
+                    'prefix' => $prefix,
+                ]);
+            }
         }
     }
 }

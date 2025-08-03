@@ -24,6 +24,12 @@ yarn-error.log
 /.zed
 /.scribe
 
+# Test artifacts
+/build
+/coverage
+*.cache
+.pest
+
 **/caddy
 frankenphp
 frankenphp-worker.php

@@ -7,6 +7,11 @@
             "Monsefeledrisse\\FilamentSolarIcons\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Monsefeledrisse\\FilamentSolarIcons\\Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Monsef Eledrisse",
@@ -15,5 +20,27 @@
     ],
     "require": {
         "blade-ui-kit/blade-icons": "^1.8"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.0",
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "scripts": {
+        "test": "pest"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Monsefeledrisse\\FilamentSolarIcons\\SolarIconSetServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }
