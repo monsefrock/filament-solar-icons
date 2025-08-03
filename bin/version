@@ -1,0 +1,121 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Version Management Script for Solar Icons Package
+ * 
+ * Usage:
+ *   php bin/version current          # Show current version
+ *   php bin/version bump patch       # Bump patch version (1.0.0 -> 1.0.1)
+ *   php bin/version bump minor       # Bump minor version (1.0.0 -> 1.1.0)
+ *   php bin/version bump major       # Bump major version (1.0.0 -> 2.0.0)
+ *   php bin/version set 1.2.3        # Set specific version
+ */
+
+function getCurrentVersion(): string
+{
+    $composerPath = __DIR__ . '/../composer.json';
+    if (!file_exists($composerPath)) {
+        throw new Exception('composer.json not found');
+    }
+    
+    $composer = json_decode(file_get_contents($composerPath), true);
+    return $composer['version'] ?? '0.0.0';
+}
+
+function setVersion(string $version): void
+{
+    if (!preg_match('/^\d+\.\d+\.\d+$/', $version)) {
+        throw new Exception('Invalid version format. Use semantic versioning (e.g., 1.0.0)');
+    }
+    
+    $composerPath = __DIR__ . '/../composer.json';
+    $composer = json_decode(file_get_contents($composerPath), true);
+    $composer['version'] = $version;
+    
+    file_put_contents(
+        $composerPath,
+        json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n"
+    );
+    
+    echo "✅ Version updated to {$version}\n";
+}
+
+function bumpVersion(string $type): void
+{
+    $current = getCurrentVersion();
+    [$major, $minor, $patch] = explode('.', $current);
+    
+    switch ($type) {
+        case 'major':
+            $major++;
+            $minor = 0;
+            $patch = 0;
+            break;
+        case 'minor':
+            $minor++;
+            $patch = 0;
+            break;
+        case 'patch':
+            $patch++;
+            break;
+        default:
+            throw new Exception('Invalid bump type. Use: major, minor, or patch');
+    }
+    
+    $newVersion = "{$major}.{$minor}.{$patch}";
+    setVersion($newVersion);
+    echo "📈 Bumped {$type} version: {$current} → {$newVersion}\n";
+}
+
+function showUsage(): void
+{
+    echo "Solar Icons Version Manager\n\n";
+    echo "Usage:\n";
+    echo "  php bin/version current          Show current version\n";
+    echo "  php bin/version bump patch       Bump patch version (1.0.0 → 1.0.1)\n";
+    echo "  php bin/version bump minor       Bump minor version (1.0.0 → 1.1.0)\n";
+    echo "  php bin/version bump major       Bump major version (1.0.0 → 2.0.0)\n";
+    echo "  php bin/version set 1.2.3        Set specific version\n";
+    echo "  php bin/version help             Show this help\n\n";
+    echo "Semantic Versioning Guidelines:\n";
+    echo "  MAJOR: Incompatible API changes\n";
+    echo "  MINOR: New functionality (backwards compatible)\n";
+    echo "  PATCH: Bug fixes (backwards compatible)\n";
+}
+
+// Main script logic
+try {
+    $command = $argv[1] ?? 'help';
+    
+    switch ($command) {
+        case 'current':
+            echo "Current version: " . getCurrentVersion() . "\n";
+            break;
+            
+        case 'bump':
+            $type = $argv[2] ?? null;
+            if (!$type) {
+                throw new Exception('Bump type required. Use: major, minor, or patch');
+            }
+            bumpVersion($type);
+            break;
+            
+        case 'set':
+            $version = $argv[2] ?? null;
+            if (!$version) {
+                throw new Exception('Version required. Use semantic versioning (e.g., 1.0.0)');
+            }
+            setVersion($version);
+            break;
+            
+        case 'help':
+        default:
+            showUsage();
+            break;
+    }
+} catch (Exception $e) {
+    echo "❌ Error: " . $e->getMessage() . "\n";
+    echo "\nRun 'php bin/version help' for usage information.\n";
+    exit(1);
+}

@@ -1,6 +1,10 @@
 {
     "name": "monsefeledrisse/filament-solar-icons",
-    "description": "Solar Icon Set for Filament Admin Panel",
+    "description": "Solar Icon Set for Filament Admin Panel - Professional icon package with 7,000+ Solar icons across 6 styles",
+    "version": "1.0.0",
+    "type": "library",
+    "keywords": ["filament", "icons", "solar", "laravel", "blade-icons", "ui", "admin-panel"],
+    "homepage": "https://github.com/monsefeledrisse/filament-solar-icons",
     "license": "MIT",
     "autoload": {
         "psr-4": {
@@ -15,9 +19,14 @@
     "authors": [
         {
             "name": "Monsef Eledrisse",
-            "email": "zaone035@gmail.com"
+            "email": "zaone035@gmail.com",
+            "role": "Developer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/monsefeledrisse/filament-solar-icons/issues",
+        "source": "https://github.com/monsefeledrisse/filament-solar-icons"
+    },
     "require": {
         "blade-ui-kit/blade-icons": "^1.8",
         "php": "^8.1"
@@ -31,7 +40,12 @@
         "phpunit/phpunit": "^10.0"
     },
     "scripts": {
-        "test": "pest"
+        "test": "pest",
+        "version": "php bin/version",
+        "version:current": "php bin/version current",
+        "version:patch": "php bin/version bump patch",
+        "version:minor": "php bin/version bump minor",
+        "version:major": "php bin/version bump major"
     },
     "extra": {
         "laravel": {
