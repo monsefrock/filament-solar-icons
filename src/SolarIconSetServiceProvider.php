@@ -6,62 +6,18 @@ namespace Monsefeledrisse\FilamentSolarIcons;
 
 use BladeUI\Icons\Factory;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Log;
 use Monsefeledrisse\FilamentSolarIcons\Commands\SolarIconBrowserCommand;
 
 /**
- * Solar Icon Set Service Provider
+ * Solar Icons Service Provider
  *
- * Registers Solar icon sets with BladeUI Icons Factory and provides
- * configuration management for the Solar Icons package.
+ * Registers Solar icon sets with BladeUI Icons Factory following
+ * the same pattern as BladeHeroicons for consistency and simplicity.
  *
  * @package Monsefeledrisse\FilamentSolarIcons
  */
 class SolarIconSetServiceProvider extends ServiceProvider
 {
-    /**
-     * Default icon sets configuration
-     */
-    private const DEFAULT_ICON_SETS = [
-        'solar-bold' => [
-            'enabled' => true,
-            'path' => 'resources/icons/solar/solar-bold',
-        ],
-        'solar-bold-duotone' => [
-            'enabled' => true,
-            'path' => 'resources/icons/solar/solar-bold-duotone',
-        ],
-        'solar-broken' => [
-            'enabled' => true,
-            'path' => 'resources/icons/solar/solar-broken',
-        ],
-        'solar-line-duotone' => [
-            'enabled' => true,
-            'path' => 'resources/icons/solar/solar-line-duotone',
-        ],
-        'solar-linear' => [
-            'enabled' => true,
-            'path' => 'resources/icons/solar/solar-linear',
-        ],
-        'solar-outline' => [
-            'enabled' => true,
-            'path' => 'resources/icons/solar/solar-outline',
-        ],
-    ];
-
-    /**
-     * Bootstrap the application services.
-     */
-    public function boot(): void
-    {
-        try {
-            $this->registerIcons();
-            $this->registerCommands();
-            $this->publishConfiguration();
-        } catch (\Throwable $e) {
-            $this->handleBootError($e);
-        }
-    }
 
     /**
      * Register the application services.
@@ -75,130 +31,154 @@ class SolarIconSetServiceProvider extends ServiceProvider
     }
 
     /**
+     * Bootstrap the application services.
+     */
+    public function boot(): void
+    {
+        $this->registerIcons();
+        $this->registerCommands();
+        $this->publishAssets();
+    }
+
+    /**
      * Register Solar icon sets with BladeUI Icons Factory.
-     *
-     * @throws \Exception When Factory cannot be resolved or icon registration fails
      */
     protected function registerIcons(): void
     {
-        $iconSets = $this->getIconSetsConfiguration();
-        $factory = $this->resolveIconFactory();
+        $factory = $this->app->make(Factory::class);
 
-        $registeredCount = 0;
-        $skippedCount = 0;
+        $sets = config('solar-icons.sets', [
+            'solar-bold',
+            'solar-bold-duotone',
+            'solar-broken',
+            'solar-line-duotone',
+            'solar-linear',
+            'solar-outline',
+        ]);
 
-        foreach ($iconSets as $prefix => $config) {
-            if (!$this->isIconSetEnabled($config)) {
-                $skippedCount++;
-                continue;
-            }
-
-            $path = $this->resolveIconSetPath($prefix, $config);
-
-            if ($this->validateIconSetPath($path, $prefix)) {
-                $this->registerIconSet($factory, $prefix, $path);
-                $registeredCount++;
-            } else {
-                $skippedCount++;
-            }
+        // Register individual sets for backward compatibility
+        foreach ($sets as $set) {
+            $this->registerIconSet($factory, $set);
         }
 
-        $this->logRegistrationSummary($registeredCount, $skippedCount);
+        // Also register all icons in the default set for easy access
+        $this->registerAllIconsInDefaultSet($factory, $sets);
     }
 
     /**
-     * Get icon sets configuration from config or use defaults.
+     * Register a single icon set with flattened structure.
      */
-    private function getIconSetsConfiguration(): array
+    protected function registerIconSet($factory, string $set): void
     {
-        $configSets = config('solar-icons.icon_sets', []);
+        $sourcePath = __DIR__ . "/../resources/icons/solar/{$set}";
 
-        // Merge with defaults, ensuring all required keys exist
-        $iconSets = [];
-        foreach (self::DEFAULT_ICON_SETS as $prefix => $defaultConfig) {
-            $iconSets[$prefix] = array_merge(
-                $defaultConfig,
-                $configSets[$prefix] ?? []
-            );
+        if (!is_dir($sourcePath)) {
+            return;
         }
 
-        return $iconSets;
-    }
+        // Create a temporary flattened structure for BladeUI Icons
+        $flattenedPath = $this->createFlattenedIconSet($sourcePath, $set);
 
-    /**
-     * Resolve the BladeUI Icons Factory instance.
-     *
-     * @throws \Exception When Factory cannot be resolved
-     */
-    protected function resolveIconFactory(): Factory
-    {
-        try {
-            return $this->app->make(Factory::class);
-        } catch (\Throwable $e) {
-            throw new \Exception(
-                'Failed to resolve BladeUI Icons Factory. Make sure blade-ui-kit/blade-icons is installed.',
-                0,
-                $e
-            );
-        }
-    }
-
-    /**
-     * Check if an icon set is enabled.
-     */
-    private function isIconSetEnabled(array $config): bool
-    {
-        return ($config['enabled'] ?? true) === true;
-    }
-
-    /**
-     * Resolve the full path for an icon set.
-     */
-    private function resolveIconSetPath(string $prefix, array $config): string
-    {
-        if (isset($config['path']) && !empty($config['path'])) {
-            // If path is relative, make it absolute from package root
-            if (!str_starts_with($config['path'], '/')) {
-                return __DIR__ . '/../' . $config['path'];
-            }
-            return $config['path'];
-        }
-
-        // Fallback to default path structure
-        return __DIR__ . "/../resources/icons/solar/{$prefix}";
-    }
-
-    /**
-     * Validate that an icon set path exists and is readable.
-     */
-    private function validateIconSetPath(string $path, string $prefix): bool
-    {
-        if (!is_dir($path)) {
-            $this->logIconSetWarning($prefix, "Directory does not exist: {$path}");
-            return false;
-        }
-
-        if (!is_readable($path)) {
-            $this->logIconSetWarning($prefix, "Directory is not readable: {$path}");
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Register a single icon set with the factory.
-     */
-    private function registerIconSet(Factory $factory, string $prefix, string $path): void
-    {
-        try {
-            $factory->add($prefix, [
-                'path' => $path,
-                'prefix' => $prefix,
+        if ($flattenedPath && is_dir($flattenedPath)) {
+            $factory->add($set, [
+                'path' => $flattenedPath,
+                'prefix' => $set,
+                'class' => config('solar-icons.class', ''),
+                'attributes' => config('solar-icons.attributes', []),
             ]);
-        } catch (\Throwable $e) {
-            $this->logIconSetError($prefix, "Failed to register icon set: {$e->getMessage()}");
         }
+    }
+
+    /**
+     * Create a flattened icon set structure for BladeUI Icons.
+     */
+    protected function createFlattenedIconSet(string $sourcePath, string $set): ?string
+    {
+        $tempPath = sys_get_temp_dir() . "/solar-icons/{$set}";
+
+        // Only create if it doesn't exist or is empty
+        if (!is_dir($tempPath) || count(glob($tempPath . '/*.svg')) === 0) {
+            // Create temp directory if it doesn't exist
+            if (!is_dir($tempPath)) {
+                if (!mkdir($tempPath, 0755, true)) {
+                    return null;
+                }
+            }
+
+            // Clear existing files
+            $this->clearDirectory($tempPath);
+
+            // Recursively find all SVG files and copy them with flattened names
+            $this->flattenIconDirectory($sourcePath, $tempPath);
+        }
+
+        return $tempPath;
+    }
+
+    /**
+     * Recursively flatten icon directory structure.
+     */
+    protected function flattenIconDirectory(string $sourceDir, string $targetDir): void
+    {
+        try {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($sourceDir, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::LEAVES_ONLY
+            );
+
+            $count = 0;
+            foreach ($iterator as $file) {
+                if ($file->isFile() && strtolower($file->getExtension()) === 'svg') {
+                    $filename = $file->getFilename();
+                    $targetFile = $targetDir . '/' . $filename;
+
+                    // Copy the file to the flattened structure
+                    if (copy($file->getPathname(), $targetFile)) {
+                        $count++;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Silently handle errors
+        }
+    }
+
+    /**
+     * Register all icons in the default set with their full names.
+     */
+    protected function registerAllIconsInDefaultSet($factory, array $sets): void
+    {
+        $tempPath = sys_get_temp_dir() . "/solar-icons/all";
+
+        // Only create if it doesn't exist or is empty
+        if (!is_dir($tempPath) || count(glob($tempPath . '/*.svg')) === 0) {
+            // Create temp directory if it doesn't exist
+            if (!is_dir($tempPath)) {
+                if (!mkdir($tempPath, 0755, true)) {
+                    return;
+                }
+            }
+
+            // Clear existing files
+            $this->clearDirectory($tempPath);
+
+            // Copy all icons with their full names (set-iconname.svg)
+            foreach ($sets as $set) {
+                $sourcePath = __DIR__ . "/../resources/icons/solar/{$set}";
+
+                if (is_dir($sourcePath)) {
+                    $this->flattenIconDirectoryWithPrefix($sourcePath, $tempPath, $set);
+                }
+            }
+        }
+
+        // Register the combined set as the default
+        $factory->add('default', [
+            'path' => $tempPath,
+            'prefix' => '',
+            'class' => config('solar-icons.class', ''),
+            'attributes' => config('solar-icons.attributes', []),
+        ]);
     }
 
     /**
@@ -213,58 +193,74 @@ class SolarIconSetServiceProvider extends ServiceProvider
         }
     }
 
+
+
     /**
-     * Publish configuration files.
+     * Recursively flatten icon directory structure with set prefix.
      */
-    protected function publishConfiguration(): void
+    protected function flattenIconDirectoryWithPrefix(string $sourceDir, string $targetDir, string $setPrefix): void
     {
+        try {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($sourceDir, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::LEAVES_ONLY
+            );
+
+            $count = 0;
+            foreach ($iterator as $file) {
+                if ($file->isFile() && strtolower($file->getExtension()) === 'svg') {
+                    $filename = $file->getBasename('.svg');
+                    $prefixedFilename = $setPrefix . '-' . $filename . '.svg';
+                    $targetFile = $targetDir . '/' . $prefixedFilename;
+
+                    // Copy the file to the flattened structure with prefix
+                    if (copy($file->getPathname(), $targetFile)) {
+                        $count++;
+                    }
+                }
+            }
+
+            // Only log in debug mode
+            if (config('app.debug', false) && function_exists('error_log')) {
+                error_log("Solar Icons: Flattened {$count} files from {$sourceDir} to {$targetDir} with prefix {$setPrefix}");
+            }
+        } catch (\Exception $e) {
+            if (function_exists('error_log')) {
+                error_log("Solar Icons: Error flattening directory {$sourceDir}: " . $e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Clear all files in a directory.
+     */
+    protected function clearDirectory(string $directory): void
+    {
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $files = glob($directory . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+    }
+
+    /**
+     * Publish assets and configuration.
+     */
+    protected function publishAssets(): void
+    {
+        // Publish configuration
         $this->publishes([
             __DIR__ . '/../config/solar-icons.php' => config_path('solar-icons.php'),
         ], 'solar-icons-config');
-    }
 
-    /**
-     * Handle boot errors gracefully.
-     */
-    private function handleBootError(\Throwable $e): void
-    {
-        $message = "Solar Icons Service Provider boot failed: {$e->getMessage()}";
-
-        if (config('app.debug', false)) {
-            throw new \Exception($message, 0, $e);
-        }
-
-        Log::error($message, [
-            'exception' => $e,
-            'trace' => $e->getTraceAsString(),
-        ]);
-    }
-
-    /**
-     * Log icon set registration warning.
-     */
-    private function logIconSetWarning(string $prefix, string $message): void
-    {
-        if (config('solar-icons.development.log_missing_icons', false)) {
-            Log::warning("Solar Icons [{$prefix}]: {$message}");
-        }
-    }
-
-    /**
-     * Log icon set registration error.
-     */
-    private function logIconSetError(string $prefix, string $message): void
-    {
-        Log::error("Solar Icons [{$prefix}]: {$message}");
-    }
-
-    /**
-     * Log registration summary.
-     */
-    private function logRegistrationSummary(int $registered, int $skipped): void
-    {
-        if (config('app.debug', false)) {
-            Log::info("Solar Icons: Registered {$registered} icon sets, skipped {$skipped}");
-        }
+        // Publish SVG assets
+        $this->publishes([
+            __DIR__ . '/../resources/icons' => public_path('vendor/solar-icons'),
+        ], 'solar-icons');
     }
 }
