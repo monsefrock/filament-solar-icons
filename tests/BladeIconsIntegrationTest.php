@@ -134,15 +134,15 @@ describe('Blade Icons Integration', function () {
 
     describe('Enum Integration', function () {
         it('can use SolarIcon enum values with Blade components', function () {
-            $enumIcon = SolarIcon::FacemaskCircle;
+            $enumIcon = SolarIcon::facemaskCircle;
             $html = Blade::render('<x-icon name="' . $enumIcon->value . '" />');
-            
+
             expect($html)->toContain('<svg');
             expect($html)->toContain('</svg>');
         });
 
         it('can use SolarIcon enum with @svg directive', function () {
-            $enumIcon = SolarIcon::FacemaskCircle;
+            $enumIcon = SolarIcon::facemaskCircle;
             $template = "@svg('{$enumIcon->value}')";
             $html = Blade::render($template);
 
@@ -153,9 +153,9 @@ describe('Blade Icons Integration', function () {
         it('validates that enum values correspond to actual icons', function () {
             // Test a few random enum cases
             $testCases = [
-                SolarIcon::FacemaskCircle,
-                SolarIcon::ConfoundedCircle,
-                SolarIcon::SadSquare,
+                SolarIcon::facemaskCircle,
+                SolarIcon::confoundedCircle,
+                SolarIcon::sadSquare,
             ];
 
             foreach ($testCases as $enumCase) {

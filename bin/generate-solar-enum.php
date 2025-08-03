@@ -106,9 +106,10 @@ class SolarIconEnumGenerator
                 }
             }
 
-            // Use the first available set as the primary value
+            // Use the first available set as the primary value with lowercase icon name
             $primarySet = $availableSets[0];
-            $enumValue = $primarySet . '-' . $iconName;
+            $lowercaseIconName = strtolower($iconName);
+            $enumValue = $primarySet . '-' . $lowercaseIconName;
 
             $this->enumCases[] = [
                 'case_name' => $enumCaseName,
@@ -124,28 +125,31 @@ class SolarIconEnumGenerator
 
     private function generateEnumCaseName(string $iconName): string
     {
-        // Convert filename to valid PHP enum case name
+        // Convert filename to valid PHP enum case name using lowercase convention
         $caseName = $iconName;
-        
-        // Replace common separators with underscores
+
+        // Convert to lowercase and replace separators with underscores
+        $caseName = strtolower($caseName);
         $caseName = str_replace(['-', '.', ' ', ','], '_', $caseName);
-        
+
         // Remove any remaining non-alphanumeric characters except underscores
-        $caseName = preg_replace('/[^a-zA-Z0-9_]/', '', $caseName);
-        
-        // Split by underscores and convert to PascalCase
+        $caseName = preg_replace('/[^a-z0-9_]/', '', $caseName);
+
+        // Convert to camelCase (first letter lowercase, subsequent words capitalized)
         $parts = explode('_', $caseName);
-        $parts = array_map('ucfirst', $parts);
-        $caseName = implode('', $parts);
-        
+        $caseName = array_shift($parts); // First part stays lowercase
+        foreach ($parts as $part) {
+            $caseName .= ucfirst($part);
+        }
+
         // Ensure it starts with a letter (PHP requirement)
         if (preg_match('/^[0-9]/', $caseName)) {
-            $caseName = 'Icon' . $caseName;
+            $caseName = 'icon' . ucfirst($caseName);
         }
-        
+
         // Handle empty or invalid names
-        if (empty($caseName) || !preg_match('/^[a-zA-Z][a-zA-Z0-9]*$/', $caseName)) {
-            $caseName = 'Icon' . md5($iconName);
+        if (empty($caseName) || !preg_match('/^[a-z][a-zA-Z0-9]*$/', $caseName)) {
+            $caseName = 'icon' . md5($iconName);
         }
 
         return $caseName;
@@ -192,7 +196,7 @@ class SolarIconEnumGenerator
 
 declare(strict_types=1);
 
-namespace Monsefeledrisse\FilamentSolarIcons;
+namespace Monsefeledrisse\LaravelSolarIcons;
 
 /**
  * Solar Icon Enum
@@ -201,14 +205,15 @@ namespace Monsefeledrisse\FilamentSolarIcons;
  * Each case represents a unique icon with its corresponding BladeUI Icons identifier.
  *
  * Usage:
- * - In Blade: <x-icon :name="SolarIcon::Home->value" />
- * - With @svg: @svg(SolarIcon::Home->value)
- * - In PHP: SolarIcon::Home->value returns 'solar-linear-home'
+ * - In Blade: <x-icon :name="SolarIcon::home->value" />
+ * - With @svg: @svg(SolarIcon::home->value)
+ * - In PHP: SolarIcon::home->value returns 'solar-linear-home'
+ * - As Blade component: <x-solar-linear-home />
  *
  * Generated automatically on {$timestamp}
  * Total icons: {$totalCases}
  *
- * @package Monsefeledrisse\FilamentSolarIcons
+ * @package Monsefeledrisse\LaravelSolarIcons
  */
 enum SolarIcon: string
 {
@@ -257,7 +262,7 @@ enum SolarIcon: string
             throw new \InvalidArgumentException("Icon {\$this->name} is not available in set {\$set}");
         }
 
-        return \$set . '-' . \$this->getIconName();
+        return \$set . '-' . strtolower(\$this->getIconName());
     }
 }
 PHP;

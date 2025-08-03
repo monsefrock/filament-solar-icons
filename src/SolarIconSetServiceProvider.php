@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
 use Monsefeledrisse\LaravelSolarIcons\Commands\SolarIconBrowserCommand;
+use Monsefeledrisse\LaravelSolarIcons\Commands\GenerateIdeHelperCommand;
 
 /**
  * Solar Icons Service Provider
@@ -215,6 +216,7 @@ class SolarIconSetServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 SolarIconBrowserCommand::class,
+                GenerateIdeHelperCommand::class,
             ]);
         }
     }
@@ -236,7 +238,9 @@ class SolarIconSetServiceProvider extends ServiceProvider
             foreach ($iterator as $file) {
                 if ($file->isFile() && strtolower($file->getExtension()) === 'svg') {
                     $filename = $file->getBasename('.svg');
-                    $prefixedFilename = $setPrefix . '-' . $filename . '.svg';
+                    // Convert filename to lowercase for consistency
+                    $lowercaseFilename = strtolower($filename);
+                    $prefixedFilename = $setPrefix . '-' . $lowercaseFilename . '.svg';
                     $targetFile = $targetDir . '/' . $prefixedFilename;
 
                     // Copy the file to the flattened structure with prefix

@@ -240,19 +240,28 @@ class SolarIconHelper
         // Remove file extension if present
         $name = pathinfo($name, PATHINFO_FILENAME);
 
-        // Convert to PascalCase for enum cases
-        $name = str_replace([' ', '-', '_', '.', ','], ' ', $name);
-        $name = ucwords($name);
-        $name = str_replace(' ', '', $name);
+        // Convert to lowercase and replace separators with underscores
+        $name = strtolower($name);
+        $name = str_replace([' ', '-', '.', ','], '_', $name);
+
+        // Remove any remaining non-alphanumeric characters except underscores
+        $name = preg_replace('/[^a-z0-9_]/', '', $name);
+
+        // Convert to camelCase for enum cases (first letter lowercase)
+        $parts = explode('_', $name);
+        $name = array_shift($parts); // First part stays lowercase
+        foreach ($parts as $part) {
+            $name .= ucfirst($part);
+        }
 
         // Handle numbers at the start (PHP enum cases cannot start with numbers)
         if (is_numeric(substr($name, 0, 1))) {
-            $name = 'Icon' . $name;
+            $name = 'icon' . ucfirst($name);
         }
 
         // Ensure the name is not empty
         if (empty($name)) {
-            $name = 'UnknownIcon';
+            $name = 'unknownIcon';
         }
 
         return $name;
@@ -414,53 +423,53 @@ class SolarIconHelper
     {
         $recommendations = [
             'navigation' => [
-                SolarIcon::Home,
-                SolarIcon::User,
-                SolarIcon::Users,
-                SolarIcon::Settings,
-                SolarIcon::Bell,
-                SolarIcon::Calendar,
+                SolarIcon::home,
+                SolarIcon::user,
+                SolarIcon::users,
+                SolarIcon::settings,
+                SolarIcon::bell,
+                SolarIcon::calendar,
             ],
             'actions' => [
-                SolarIcon::Add,
-                SolarIcon::Edit,
-                SolarIcon::Delete,
-                SolarIcon::Save,
-                SolarIcon::Download,
-                SolarIcon::Upload,
-                SolarIcon::Copy,
-                SolarIcon::Share,
+                SolarIcon::addCircle,
+                SolarIcon::pen,
+                SolarIcon::trashBinMinimalistic,
+                SolarIcon::diskette,
+                SolarIcon::download,
+                SolarIcon::upload,
+                SolarIcon::copy,
+                SolarIcon::share,
             ],
             'status' => [
-                SolarIcon::Success,
-                SolarIcon::Warning,
-                SolarIcon::Error,
-                SolarIcon::Info,
-                SolarIcon::Question,
+                SolarIcon::checkCircle,
+                SolarIcon::dangerTriangle,
+                SolarIcon::closeCircle,
+                SolarIcon::infoCircle,
+                SolarIcon::questionCircle,
             ],
             'media' => [
-                SolarIcon::Image,
-                SolarIcon::File,
-                SolarIcon::Folder,
-                SolarIcon::Camera,
-                SolarIcon::Video,
-                SolarIcon::Music,
+                SolarIcon::gallery,
+                SolarIcon::file,
+                SolarIcon::folder,
+                SolarIcon::camera,
+                SolarIcon::videocamera,
+                SolarIcon::musicNote,
             ],
             'communication' => [
-                SolarIcon::Mail,
-                SolarIcon::Phone,
-                SolarIcon::Chat,
-                SolarIcon::Message,
-                SolarIcon::Notification,
+                SolarIcon::letter,
+                SolarIcon::phone,
+                SolarIcon::chatRound,
+                SolarIcon::chatRoundDots,
+                SolarIcon::bell,
             ],
             'business' => [
-                SolarIcon::Money,
-                SolarIcon::Cart,
-                SolarIcon::Shop,
-                SolarIcon::Tag,
-                SolarIcon::Receipt,
-                SolarIcon::Chart,
-                SolarIcon::Analytics,
+                SolarIcon::dollar,
+                SolarIcon::cart,
+                SolarIcon::shop,
+                SolarIcon::tag,
+                SolarIcon::bill,
+                SolarIcon::chartSquare,
+                SolarIcon::pieChart,
             ],
         ];
 
