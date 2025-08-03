@@ -161,7 +161,7 @@ describe('SolarIconSetServiceProvider', function () {
         it('handles missing icon directories gracefully', function () {
             // Create a service provider that tries to register a non-existent directory
             $provider = new class($this->app) extends SolarIconSetServiceProvider {
-                protected function registerIcons()
+                protected function registerIcons(): void
                 {
                     $iconSets = [
                         'non-existent' => '/path/that/does/not/exist',
@@ -186,7 +186,7 @@ describe('SolarIconSetServiceProvider', function () {
 
         it('handles Factory instantiation errors gracefully', function () {
             $provider = new class($this->app) extends SolarIconSetServiceProvider {
-                protected function registerIcons()
+                protected function registerIcons(): void
                 {
                     try {
                         /** @var Factory $icons */

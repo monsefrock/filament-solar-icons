@@ -1,41 +1,99 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Monsefeledrisse\FilamentSolarIcons\Commands;
 
 use Illuminate\Console\Command;
 use Monsefeledrisse\FilamentSolarIcons\SolarIconHelper;
 use Monsefeledrisse\FilamentSolarIcons\SolarIcon;
 
+/**
+ * Solar Icon Browser Command
+ *
+ * Provides a command-line interface for browsing and searching Solar icons.
+ * Supports filtering by style, searching by name, and displaying enum cases
+ * for Filament v4 integration.
+ *
+ * @package Monsefeledrisse\FilamentSolarIcons\Commands
+ */
 class SolarIconBrowserCommand extends Command
 {
-    protected $signature = 'solar-icons:browse 
+    /**
+     * The name and signature of the console command.
+     */
+    protected $signature = 'solar-icons:browse
                            {search? : Search term to filter icons}
                            {--style= : Filter by icon style (bold, outline, linear, etc.)}
                            {--limit=20 : Limit number of results}
-                           {--enum : Show enum cases for Filament v4}';
+                           {--enum : Show enum cases for Filament v4}
+                           {--clear-cache : Clear the icon cache before browsing}';
 
-    protected $description = 'Browse and search Solar icons';
+    /**
+     * The console command description.
+     */
+    protected $description = 'Browse and search Solar icons with filtering and search capabilities';
 
-    public function handle()
+    /**
+     * Execute the console command.
+     */
+    public function handle(): int
     {
-        $search = $this->argument('search');
-        $style = $this->option('style');
-        $limit = (int) $this->option('limit');
-        $showEnum = $this->option('enum');
+        try {
+            // Clear cache if requested
+            if ($this->option('clear-cache')) {
+                $this->clearCache();
+            }
 
-        $this->info('🌟 Solar Icons Browser');
-        $this->line('');
+            $search = $this->argument('search');
+            $style = $this->option('style');
+            $limit = max(1, (int) $this->option('limit')); // Ensure positive limit
+            $showEnum = $this->option('enum');
 
-        if ($search) {
-            $this->searchIcons($search, $limit, $showEnum);
-        } elseif ($style) {
-            $this->browseByStyle($style, $limit, $showEnum);
-        } else {
-            $this->showOverview();
+            $this->displayHeader();
+
+            if ($search) {
+                return $this->searchIcons($search, $limit, $showEnum);
+            } elseif ($style) {
+                return $this->browseByStyle($style, $limit, $showEnum);
+            } else {
+                return $this->showOverview();
+            }
+        } catch (\Throwable $e) {
+            $this->error("An error occurred: {$e->getMessage()}");
+            if ($this->getOutput()->isVerbose()) {
+                $this->line($e->getTraceAsString());
+            }
+            return self::FAILURE;
         }
     }
 
-    protected function searchIcons(string $search, int $limit, bool $showEnum): void
+    /**
+     * Display the command header.
+     */
+    private function displayHeader(): void
+    {
+        $this->info('🌟 Solar Icons Browser');
+        $this->line('');
+    }
+
+    /**
+     * Clear the icon cache.
+     */
+    private function clearCache(): void
+    {
+        if (SolarIconHelper::clearCache()) {
+            $this->info('✅ Icon cache cleared successfully');
+        } else {
+            $this->warn('⚠️  Failed to clear icon cache');
+        }
+        $this->line('');
+    }
+
+    /**
+     * Search for icons matching the given query.
+     */
+    protected function searchIcons(string $search, int $limit, bool $showEnum): int
     {
         $this->info("🔍 Searching for icons matching: '{$search}'");
         $this->line('');
@@ -45,14 +103,28 @@ class SolarIconBrowserCommand extends Command
         if ($icons->isEmpty()) {
             $this->warn("No icons found matching '{$search}'");
             $this->suggestAlternatives($search);
-            return;
+            return self::SUCCESS;
         }
 
         $this->displayIcons($icons, $showEnum);
+        return self::SUCCESS;
     }
 
-    protected function browseByStyle(string $style, int $limit, bool $showEnum): void
+    /**
+     * Browse icons by style.
+     */
+    protected function browseByStyle(string $style, int $limit, bool $showEnum): int
     {
+        // Validate style
+        $availableStyles = SolarIconHelper::getAvailableStyles();
+        $normalizedStyle = str_starts_with($style, 'solar-') ? $style : "solar-{$style}";
+
+        if (!in_array($normalizedStyle, $availableStyles, true)) {
+            $this->error("❌ Unknown style: '{$style}'");
+            $this->showAvailableStyles();
+            return self::FAILURE;
+        }
+
         $this->info("🎨 Browsing {$style} style icons");
         $this->line('');
 
@@ -60,40 +132,59 @@ class SolarIconBrowserCommand extends Command
 
         if ($icons->isEmpty()) {
             $this->warn("No icons found for style '{$style}'");
-            $this->showAvailableStyles();
-            return;
+            $this->info("This might indicate missing icon files or a configuration issue.");
+            return self::SUCCESS;
         }
 
         $this->displayIcons($icons, $showEnum);
+        return self::SUCCESS;
     }
 
-    protected function showOverview(): void
+    /**
+     * Show overview of available icons and usage examples.
+     */
+    protected function showOverview(): int
     {
         $this->info('📊 Solar Icons Overview');
         $this->line('');
 
-        // Show statistics
-        $totalIcons = SolarIconHelper::getAllIconFiles()->count();
-        $this->info("Total Icons: {$totalIcons}");
-        $this->line('');
+        try {
+            // Show statistics
+            $totalIcons = SolarIconHelper::getAllIconFiles()->count();
+            $this->info("Total Icons: {$totalIcons}");
+            $this->line('');
 
-        // Show available styles
-        $this->info('Available Styles:');
-        foreach (SolarIcon::getAvailableStyles() as $style => $description) {
-            $count = SolarIconHelper::getIconsByStyle($style)->count();
-            $this->line("  • {$style}: {$count} icons - {$description}");
+            // Show available styles
+            $this->info('Available Styles:');
+            foreach (SolarIcon::getAvailableStyles() as $style => $description) {
+                $count = SolarIconHelper::getIconsByStyle($style)->count();
+                $this->line("  • {$style}: {$count} icons - {$description}");
+            }
+            $this->line('');
+
+            // Show popular icons
+            $this->info('Popular Icons:');
+            $popular = SolarIconHelper::getPopularIcons();
+            foreach (array_slice($popular, 0, 10, true) as $icon => $description) {
+                $this->line("  • {$icon}: {$description}");
+            }
+            $this->line('');
+
+            // Show usage examples
+            $this->showUsageExamples();
+
+            return self::SUCCESS;
+        } catch (\Throwable $e) {
+            $this->error("Failed to load icon overview: {$e->getMessage()}");
+            return self::FAILURE;
         }
-        $this->line('');
+    }
 
-        // Show popular icons
-        $this->info('Popular Icons:');
-        $popular = SolarIconHelper::getPopularIcons();
-        foreach (array_slice($popular, 0, 10, true) as $icon => $description) {
-            $this->line("  • {$icon}: {$description}");
-        }
-        $this->line('');
-
-        // Show usage examples
+    /**
+     * Show usage examples.
+     */
+    private function showUsageExamples(): void
+    {
         $this->info('Usage Examples:');
         $this->line('  # Search for icons');
         $this->line('  php artisan solar-icons:browse user');
@@ -103,6 +194,12 @@ class SolarIconBrowserCommand extends Command
         $this->line('');
         $this->line('  # Show enum cases for Filament v4');
         $this->line('  php artisan solar-icons:browse home --enum');
+        $this->line('');
+        $this->line('  # Clear cache and browse');
+        $this->line('  php artisan solar-icons:browse --clear-cache');
+        $this->line('');
+        $this->line('  # Limit results');
+        $this->line('  php artisan solar-icons:browse user --limit=5');
     }
 
     protected function displayIcons($icons, bool $showEnum): void

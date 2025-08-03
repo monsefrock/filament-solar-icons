@@ -1,18 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Monsefeledrisse\FilamentSolarIcons;
 
 use Filament\Support\Contracts\ScalableIcon;
 
 /**
  * Solar Icon Set for Filament v4
- * 
+ *
  * This enum provides type-safe access to Solar icons in Filament v4,
  * similar to how Heroicon works in the core Filament package.
- * 
- * Usage:
+ *
+ * Each enum case represents a specific Solar icon with its full identifier.
+ * The enum implements ScalableIcon to work seamlessly with Filament components.
+ *
+ * @example
+ * ```php
+ * // In Filament components
  * Action::make('star')->icon(SolarIcon::Star)
  * TextInput::make('name')->prefixIcon(SolarIcon::OutlineUser)
+ * NavigationItem::make('Dashboard')->icon(SolarIcon::LinearHome)
+ * ```
+ *
+ * @package Monsefeledrisse\FilamentSolarIcons
  */
 enum SolarIcon: string implements ScalableIcon
 {
@@ -265,7 +276,9 @@ enum SolarIcon: string implements ScalableIcon
     }
 
     /**
-     * Get all available Solar icon styles
+     * Get all available Solar icon styles with descriptions.
+     *
+     * @return array<string, string> Array of style names and descriptions
      */
     public static function getAvailableStyles(): array
     {
@@ -280,7 +293,11 @@ enum SolarIcon: string implements ScalableIcon
     }
 
     /**
-     * Get icon by name and style
+     * Get icon identifier by name and style.
+     *
+     * @param string $name The icon name
+     * @param string $style The icon style (default: 'linear')
+     * @return string The full icon identifier
      */
     public static function getIcon(string $name, string $style = 'linear'): string
     {
@@ -288,11 +305,72 @@ enum SolarIcon: string implements ScalableIcon
     }
 
     /**
-     * Check if an icon exists in the enum
+     * Check if an icon exists in the enum.
+     *
+     * @param string $iconName The icon identifier to check
+     * @return bool True if the icon exists in the enum, false otherwise
      */
     public static function exists(string $iconName): bool
     {
+        if (empty(trim($iconName))) {
+            return false;
+        }
+
         return collect(self::cases())->contains(fn($case) => $case->value === $iconName);
+    }
+
+    /**
+     * Find an enum case by its value.
+     *
+     * @param string $iconName The icon identifier
+     * @return self|null The enum case or null if not found
+     */
+    public static function tryFrom(string $iconName): ?self
+    {
+        if (empty(trim($iconName))) {
+            return null;
+        }
+
+        foreach (self::cases() as $case) {
+            if ($case->value === $iconName) {
+                return $case;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get all enum cases as an array of values.
+     *
+     * @return array<string> Array of all icon identifiers
+     */
+    public static function values(): array
+    {
+        return array_map(fn($case) => $case->value, self::cases());
+    }
+
+    /**
+     * Get enum cases grouped by style.
+     *
+     * @return array<string, array<self>> Array of styles with their icons
+     */
+    public static function groupedByStyle(): array
+    {
+        $grouped = [];
+
+        foreach (self::cases() as $case) {
+            $parts = explode('-', $case->value, 3);
+            if (count($parts) >= 2) {
+                $style = $parts[1];
+                if (count($parts) === 3 && $parts[2] === 'duotone') {
+                    $style .= '-duotone';
+                }
+                $grouped[$style][] = $case;
+            }
+        }
+
+        return $grouped;
     }
 
     /**

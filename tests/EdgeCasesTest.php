@@ -7,15 +7,22 @@ use Monsefeledrisse\FilamentSolarIcons\SolarIconSetServiceProvider;
 describe('Edge Cases and Error Handling', function () {
     describe('Service Provider Robustness', function () {
         it('handles missing BladeUI Icons Factory gracefully', function () {
-            // Create a mock app without the Factory
-            $mockApp = Mockery::mock(\Illuminate\Foundation\Application::class);
-            $mockApp->shouldReceive('make')
-                ->with(Factory::class)
-                ->andThrow(new \Illuminate\Contracts\Container\BindingResolutionException('Factory not bound'));
+            // Test that the service provider handles Factory resolution errors gracefully
+            // by creating a provider that will fail to resolve the Factory
+            $provider = new class($this->app) extends SolarIconSetServiceProvider {
+                protected function resolveIconFactory(): Factory
+                {
+                    throw new \Exception('Failed to resolve BladeUI Icons Factory. Make sure blade-ui-kit/blade-icons is installed.');
+                }
+            };
 
-            $provider = new SolarIconSetServiceProvider($mockApp);
+            // In non-debug mode, this should not throw an exception
+            config(['app.debug' => false]);
+            expect(fn() => $provider->boot())->not->toThrow(\Exception::class);
 
-            expect(fn() => $provider->boot())->toThrow(\Illuminate\Contracts\Container\BindingResolutionException::class);
+            // In debug mode, it should throw an exception
+            config(['app.debug' => true]);
+            expect(fn() => $provider->boot())->toThrow(\Exception::class);
         });
 
         it('handles corrupted icon directories', function () {
@@ -51,7 +58,7 @@ describe('Edge Cases and Error Handling', function () {
                         $this->tempDir = $tempDir;
                     }
                     
-                    protected function registerIcons()
+                    protected function registerIcons(): void
                     {
                         $iconSets = [
                             'solar-empty' => $this->tempDir,
