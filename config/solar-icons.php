@@ -92,4 +92,58 @@ return [
         */
         'force_rebuild' => env('SOLAR_ICONS_FORCE_REBUILD', false),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Performance Settings
+    |--------------------------------------------------------------------------
+    |
+    | These settings control performance optimizations for the icon package.
+    |
+    */
+
+    'performance' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Enable Caching
+        |--------------------------------------------------------------------------
+        |
+        | When enabled, icon metadata will be cached to improve performance.
+        | Recommended for production environments.
+        |
+        */
+        'cache_enabled' => env('SOLAR_ICONS_CACHE_ENABLED', true),
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cache TTL
+        |--------------------------------------------------------------------------
+        |
+        | Time-to-live for cached icon data in seconds. Default is 1 hour.
+        |
+        */
+        'cache_ttl' => env('SOLAR_ICONS_CACHE_TTL', 3600),
+
+        /*
+        |--------------------------------------------------------------------------
+        | Lazy Loading
+        |--------------------------------------------------------------------------
+        |
+        | When enabled, icon sets are only loaded when first accessed.
+        | This significantly improves application boot time.
+        |
+        */
+        'lazy_loading' => env('SOLAR_ICONS_LAZY_LOADING', true),
+
+        /*
+        |--------------------------------------------------------------------------
+        | Preload Only Used Sets
+        |--------------------------------------------------------------------------
+        |
+        | Only preload icon sets that are commonly used. Other sets will be
+        | loaded on-demand. Leave empty to load all sets.
+        |
+        */
+        'preload_sets' => env('SOLAR_ICONS_PRELOAD_SETS', 'solar-outline,solar-linear'),
+    ],
 ];
